@@ -60,4 +60,13 @@ class MoviesRestClientTest {
         assertThrows(MovieErrorResponse.class,
                 () -> moviesRestClient.retrieveMoviesByName(movieName));
     }
+
+    @Test
+    void retrieveMoviesByYear() {
+        Integer year = 2012;
+
+        List<Movie> movies = moviesRestClient.retrieveMoviesByYear(year);
+
+        assertEquals(2, movies.size());
+    }
 }
