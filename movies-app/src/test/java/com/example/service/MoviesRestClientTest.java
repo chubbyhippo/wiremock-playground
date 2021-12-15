@@ -88,4 +88,14 @@ class MoviesRestClientTest {
         System.out.println(addedMovie);
         assertNotNull(addedMovie.getMovieId());
     }
+
+    @Test
+    void addMovieBadRequest() {
+
+        Movie movie = new Movie(null, "The Matrix", null, LocalDate.of(1999, 3, 24), 1999);
+
+        String expectedErrorMessage = "Please pass all the input fields : [name]";
+        assertThrows(MovieErrorResponse.class,
+                () -> moviesRestClient.addMovie(movie), expectedErrorMessage);
+    }
 }
