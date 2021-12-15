@@ -9,4 +9,5 @@ public class MoviesAppConstants {
     public static final String RETRIEVE_MOVIE_BY_ID = "/movieservice/v1/movie/{id}";
     public static final String MOVIE_BY_NAME_QUERY_PARAM_V1 = "movieservice/v1/movieName";
     public static final String MOVIE_BY_YEAR_QUERY_PARAM_V1 = "movieservice/v1/movieYear";
+    public static final String ADD_MOVIE_V1 = "movieservice/v1/movie";
 }
