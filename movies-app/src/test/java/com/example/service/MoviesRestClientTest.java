@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -76,5 +77,15 @@ class MoviesRestClientTest {
 
         assertThrows(MovieErrorResponse.class,
                 () -> moviesRestClient.retrieveMoviesByYear(year));
+    }
+
+    @Test
+    void addMovie() {
+
+        Movie movie = new Movie(null, "The Matrix", "Keanu Reeves", LocalDate.of(1999, 3, 24), 1999);
+
+        Movie addedMovie = moviesRestClient.addMovie(movie);
+        System.out.println(addedMovie);
+        assertNotNull(addedMovie.getMovieId());
     }
 }
