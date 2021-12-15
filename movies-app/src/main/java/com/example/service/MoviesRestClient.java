@@ -55,6 +55,30 @@ public class MoviesRestClient {
                     .collectList()
                     .block();
         } catch (WebClientResponseException e) {
+            log.error("WebClientResponseException in retrieveMovieByName. Status code is {} and the message is {} ",
+                    e.getRawStatusCode(),
+                    e.getResponseBodyAsString());
+            throw new MovieErrorResponse(e.getStatusText(), e);
+        } catch (Exception e) {
+            log.error("Exception in retrieveMovieByName and the message is {} ", e.getMessage());
+            throw new MovieErrorResponse(e);
+        }
+    }
+
+    public List<Movie> retrieveMoviesByYear(Integer year) {
+        String retrieveByYearUri = UriComponentsBuilder.fromUriString(MoviesAppConstants.MOVIE_BY_YEAR_QUERY_PARAM_V1)
+                .queryParam("year", year)
+                .buildAndExpand()
+                .toUriString();
+
+        try {
+            return webClient.get()
+                    .uri(retrieveByYearUri)
+                    .retrieve()
+                    .bodyToFlux(Movie.class)
+                    .collectList()
+                    .block();
+        } catch (WebClientResponseException e) {
             log.error("WebClientResponseException in retrieveMovieById. Status code is {} and the message is {} ",
                     e.getRawStatusCode(),
                     e.getResponseBodyAsString());
