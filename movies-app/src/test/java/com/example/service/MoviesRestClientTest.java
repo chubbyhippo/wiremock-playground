@@ -43,4 +43,21 @@ class MoviesRestClientTest {
         assertThrows(MovieErrorResponse.class,
                 () -> moviesRestClient.retrieveMovieById(movieId));
     }
+
+    @Test
+    void retrieveMoviesByName() {
+        String movieName = "Avengers";
+
+        List<Movie> movies = moviesRestClient.retrieveMoviesByName(movieName);
+
+        assertEquals(4, movies.size());
+    }
+
+    @Test
+    void retrieveMoviesByNameNotFound() {
+        String movieName = "ABC";
+
+        assertThrows(MovieErrorResponse.class,
+                () -> moviesRestClient.retrieveMoviesByName(movieName));
+    }
 }
