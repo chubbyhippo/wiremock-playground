@@ -79,12 +79,12 @@ public class MoviesRestClient {
                     .collectList()
                     .block();
         } catch (WebClientResponseException e) {
-            log.error("WebClientResponseException in retrieveMovieById. Status code is {} and the message is {} ",
+            log.error("WebClientResponseException in retrieveMovieByYear. Status code is {} and the message is {} ",
                     e.getRawStatusCode(),
                     e.getResponseBodyAsString());
             throw new MovieErrorResponse(e.getStatusText(), e);
         } catch (Exception e) {
-            log.error("Exception in retrieveMovieById and the message is {} ", e.getMessage());
+            log.error("Exception in retrieveMovieByYear and the message is {} ", e.getMessage());
             throw new MovieErrorResponse(e);
         }
     }
