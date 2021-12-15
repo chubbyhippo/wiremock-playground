@@ -26,7 +26,7 @@ public class MoviesRestClient {
 
     public Movie retrieveMovieById(Integer movieId) {
         try {
-            return webClient.get().uri(MoviesAppConstants.RETRIEVE_MOVIE_BY_ID, movieId)
+            return webClient.get().uri(MoviesAppConstants.MOVIE_BY_ID_PATH_PARAM_V1, movieId)
                     .retrieve()
                     .bodyToMono(Movie.class)
                     .block();
