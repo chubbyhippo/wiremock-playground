@@ -88,4 +88,23 @@ public class MoviesRestClient {
             throw new MovieErrorResponse(e);
         }
     }
+
+    public Movie addMovie(Movie movie) {
+        try {
+            return webClient.post()
+                    .uri(MoviesAppConstants.ADD_MOVIE_V1)
+                    .bodyValue(movie)
+                    .retrieve()
+                    .bodyToMono(Movie.class)
+                    .block();
+        } catch (WebClientResponseException e) {
+            log.error("WebClientResponseException in addMovie. Status code is {} and the message is {} ",
+                    e.getRawStatusCode(),
+                    e.getResponseBodyAsString());
+            throw new MovieErrorResponse(e.getStatusText(), e);
+        } catch (Exception e) {
+            log.error("Exception in addMovie and the message is {} ", e.getMessage());
+            throw new MovieErrorResponse(e);
+        }
+    }
 }
