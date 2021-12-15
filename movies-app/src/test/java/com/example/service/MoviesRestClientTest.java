@@ -69,4 +69,12 @@ class MoviesRestClientTest {
 
         assertEquals(2, movies.size());
     }
+
+    @Test
+    void retrieveMoviesByYearNotFound() {
+        Integer year = 2999;
+
+        assertThrows(MovieErrorResponse.class,
+                () -> moviesRestClient.retrieveMoviesByYear(year));
+    }
 }
