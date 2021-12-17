@@ -107,4 +107,25 @@ public class MoviesRestClient {
             throw new MovieErrorResponse(e);
         }
     }
+
+    public Movie updateMovie(Integer movieId, Movie movie) {
+        try {
+            return webClient.put()
+                    .uri(MoviesAppConstants.MOVIE_BY_ID_PATH_PARAM_V1, movieId)
+                    .bodyValue(movie)
+                    .retrieve()
+                    .bodyToMono(Movie.class)
+                    .block();
+        } catch (WebClientResponseException e) {
+            log.error("WebClientResponseException in updateMovie. Status code is {} and the message is {} ",
+                    e.getRawStatusCode(),
+                    e.getResponseBodyAsString());
+            throw new MovieErrorResponse(e.getStatusText(), e);
+        } catch (Exception e) {
+            log.error("Exception in updateMovie and the message is {} ", e.getMessage());
+            throw new MovieErrorResponse(e);
+        }
+    }
+
+
 }
