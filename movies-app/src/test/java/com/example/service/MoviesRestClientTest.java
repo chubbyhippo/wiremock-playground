@@ -109,4 +109,14 @@ class MoviesRestClientTest {
 
         assertTrue(updatedMovie.getCast().contains(cast));
     }
+
+    @Test
+    void updateMovieNotFound() {
+        Integer movieId = 999;
+        String cast = "ABC";
+        Movie movie = Movie.builder().cast(cast).build();
+
+        assertThrows(MovieErrorResponse.class,
+                () -> moviesRestClient.updateMovie(movieId, movie));
+    }
 }
