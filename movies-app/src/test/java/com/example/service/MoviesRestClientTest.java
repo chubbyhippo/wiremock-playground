@@ -98,4 +98,15 @@ class MoviesRestClientTest {
         assertThrows(MovieErrorResponse.class,
                 () -> moviesRestClient.addMovie(movie), expectedErrorMessage);
     }
+
+    @Test
+    void updateMovie() {
+        Integer movieId = 3;
+        String cast = "ABC";
+        Movie movie = Movie.builder().cast(cast).build();
+
+        Movie updatedMovie = moviesRestClient.updateMovie(movieId, movie);
+
+        assertTrue(updatedMovie.getCast().contains(cast));
+    }
 }
