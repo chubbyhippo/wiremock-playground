@@ -2,17 +2,29 @@ package com.example.service;
 
 import com.example.dto.Movie;
 import com.example.exception.MovieErrorResponse;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.jupiter.api.Assertions.*;
 
+@WireMockTest
 class MoviesRestClientTest {
     private MoviesRestClient moviesRestClient;
+
+    @RegisterExtension
+    static WireMockExtension wm =  WireMockExtension
+            .newInstance()
+            .options(wireMockConfig()
+                    .port(8088))
+            .build();
 
     @BeforeEach
     void setUp() {
