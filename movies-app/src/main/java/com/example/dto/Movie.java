@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @Builder
 public class Movie {
     @JsonProperty("movie_id")
-    private Long movieId;
+    private Integer movieId;
     private String cast;
     private String name;
     @JsonProperty("release_date")
