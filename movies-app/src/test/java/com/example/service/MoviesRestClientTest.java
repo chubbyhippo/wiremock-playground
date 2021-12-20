@@ -12,6 +12,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,7 +21,7 @@ class MoviesRestClientTest {
     private MoviesRestClient moviesRestClient;
 
     @RegisterExtension
-    static WireMockExtension wm =  WireMockExtension
+    static WireMockExtension wm = WireMockExtension
             .newInstance()
             .options(wireMockConfig()
                     .port(8088))
@@ -28,13 +29,23 @@ class MoviesRestClientTest {
 
     @BeforeEach
     void setUp() {
-        String baseUrl = "http://localhost:8081";
+        int port = wm.getPort();
+        String baseUrl = String.format("http://localhost:%s", port);
+        System.out.println("baseUrl = " + baseUrl);
         WebClient webClient = WebClient.create(baseUrl);
         moviesRestClient = new MoviesRestClient(webClient);
     }
 
     @Test
     void retrieveAllMovies() {
+
+        wm.stubFor(get(anyUrl())
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("all-movies.json")));
+
+
         List<Movie> movies = moviesRestClient.retrieveAllMovies();
         System.out.println(movies);
         assertTrue(movies.size() > 0);
