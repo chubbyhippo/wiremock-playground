@@ -119,4 +119,15 @@ class MoviesRestClientTest {
         assertThrows(MovieErrorResponse.class,
                 () -> moviesRestClient.updateMovie(movieId, movie));
     }
+
+    @Test
+    void deleteMovie() {
+        Movie movie = new Movie(null, "The Matrix 99", "Keanu Reeves", LocalDate.of(1999, 3, 24), 1999);
+        Movie addedMovie = moviesRestClient.addMovie(movie);
+
+        String responseMessage = moviesRestClient.deleteMovie(addedMovie.getMovieId());
+
+        String expectedErrorMessage = "Movie Deleted Successfully";
+        assertEquals(expectedErrorMessage, responseMessage);
+    }
 }
