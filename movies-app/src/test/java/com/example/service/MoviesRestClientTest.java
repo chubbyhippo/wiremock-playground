@@ -130,4 +130,11 @@ class MoviesRestClientTest {
         String expectedErrorMessage = "Movie Deleted Successfully";
         assertEquals(expectedErrorMessage, responseMessage);
     }
+
+    @Test
+    void deleteMovieNotFound() {
+        Integer movieId = 99;
+        assertThrows(MovieErrorResponse.class,
+                () -> moviesRestClient.deleteMovie(movieId));
+    }
 }
