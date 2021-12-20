@@ -127,5 +127,23 @@ public class MoviesRestClient {
         }
     }
 
+    public String deleteMovie(Integer movieId) {
+        try {
+            return webClient.delete()
+                    .uri(MoviesAppConstants.MOVIE_BY_ID_PATH_PARAM_V1, movieId)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+        } catch (WebClientResponseException e) {
+            log.error("WebClientResponseException in deleteMovie. Status code is {} and the message is {} ",
+                    e.getRawStatusCode(),
+                    e.getResponseBodyAsString());
+            throw new MovieErrorResponse(e.getStatusText(), e);
+        } catch (Exception e) {
+            log.error("Exception in deleteMovie and the message is {} ", e.getMessage());
+            throw new MovieErrorResponse(e);
+        }
+    }
+
 
 }
