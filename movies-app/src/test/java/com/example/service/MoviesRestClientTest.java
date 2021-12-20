@@ -1,5 +1,6 @@
 package com.example.service;
 
+import com.example.constants.MoviesAppConstants;
 import com.example.dto.Movie;
 import com.example.exception.MovieErrorResponse;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
@@ -38,13 +39,24 @@ class MoviesRestClientTest {
 
     @Test
     void retrieveAllMovies() {
-
         wm.stubFor(get(anyUrl())
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                         .withBodyFile("all-movies.json")));
 
+        List<Movie> movies = moviesRestClient.retrieveAllMovies();
+        System.out.println(movies);
+        assertTrue(movies.size() > 0);
+    }
+
+    @Test
+    void retrieveAllMoviesMatchesUrl() {
+        wm.stubFor(get(urlPathEqualTo(MoviesAppConstants.GET_ALL_MOVIES_V1))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("all-movies.json")));
 
         List<Movie> movies = moviesRestClient.retrieveAllMovies();
         System.out.println(movies);
