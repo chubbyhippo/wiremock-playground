@@ -25,7 +25,7 @@ class MoviesRestClientTest {
     static WireMockExtension wm = WireMockExtension
             .newInstance()
             .options(wireMockConfig()
-                    .port(8088))
+                    .dynamicPort())
             .build();
 
     @BeforeEach
