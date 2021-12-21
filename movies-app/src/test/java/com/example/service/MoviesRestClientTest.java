@@ -65,6 +65,11 @@ class MoviesRestClientTest {
 
     @Test
     void retrieveMovieById() {
+        wm.stubFor(get(urlPathMatching("/movieservice/v1/movie/[0-9]"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("movie.json")));
         Integer movieId = 1;
 
         Movie movie = moviesRestClient.retrieveMovieById(movieId);
