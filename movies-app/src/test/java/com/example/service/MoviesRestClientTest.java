@@ -3,6 +3,7 @@ package com.example.service;
 import com.example.constants.MoviesAppConstants;
 import com.example.dto.Movie;
 import com.example.exception.MovieErrorResponse;
+import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +26,8 @@ class MoviesRestClientTest {
     static WireMockExtension wm = WireMockExtension
             .newInstance()
             .options(wireMockConfig()
-                    .dynamicPort())
+                    .dynamicPort()
+                    .extensions(new ResponseTemplateTransformer(true)))
             .build();
 
     @BeforeEach
