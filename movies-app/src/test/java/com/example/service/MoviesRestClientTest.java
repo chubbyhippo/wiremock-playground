@@ -23,12 +23,8 @@ class MoviesRestClientTest {
     private MoviesRestClient moviesRestClient;
 
     @RegisterExtension
-    private final WireMockExtension wm = WireMockExtension
-            .newInstance()
-            .options(wireMockConfig()
-                    .dynamicPort()
-                    .extensions(new ResponseTemplateTransformer(true)))
-            .build();
+    private final WireMockExtension wm =
+            WireMockExtension.newInstance().options(wireMockConfig().dynamicPort().extensions(new ResponseTemplateTransformer(true))).build();
 
     @BeforeEach
     void setUp() {
@@ -41,11 +37,8 @@ class MoviesRestClientTest {
 
     @Test
     void retrieveAllMovies() {
-        wm.stubFor(get(anyUrl())
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withHeader("Content-Type", "application/json")
-                        .withBodyFile("all-movies.json")));
+        wm.stubFor(get(anyUrl()).willReturn(aResponse().withStatus(200).withHeader("Content-Type",
+                "application/json").withBodyFile("all-movies.json")));
 
         List<Movie> movies = moviesRestClient.retrieveAllMovies();
         System.out.println(movies);
@@ -54,11 +47,7 @@ class MoviesRestClientTest {
 
     @Test
     void retrieveAllMoviesMatchesUrl() {
-        wm.stubFor(get(urlPathEqualTo(MoviesAppConstants.GET_ALL_MOVIES_V1))
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withHeader("Content-Type", "application/json")
-                        .withBodyFile("all-movies.json")));
+        wm.stubFor(get(urlPathEqualTo(MoviesAppConstants.GET_ALL_MOVIES_V1)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBodyFile("all-movies.json")));
 
         List<Movie> movies = moviesRestClient.retrieveAllMovies();
         System.out.println(movies);
@@ -67,11 +56,7 @@ class MoviesRestClientTest {
 
     @Test
     void retrieveMovieById() {
-        wm.stubFor(get(urlPathMatching("/movieservice/v1/movie/[0-9]"))
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withHeader("Content-Type", "application/json")
-                        .withBodyFile("movie.json")));
+        wm.stubFor(get(urlPathMatching("/movieservice/v1/movie/[0-9]")).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBodyFile("movie.json")));
         Integer movieId = 1;
 
         Movie movie = moviesRestClient.retrieveMovieById(movieId);
@@ -81,13 +66,7 @@ class MoviesRestClientTest {
 
     @Test
     void retrieveMovieByIdResponseTemplate() {
-        wm.stubFor(get(urlPathMatching("/movieservice/v1/movie/[0-9]"))
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withHeader("Content-Type", "application/json")
-                        .withBodyFile("movie-template.json")
-                )
-        );
+        wm.stubFor(get(urlPathMatching("/movieservice/v1/movie/[0-9]")).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBodyFile("movie-template.json")));
         Integer movieId = 1;
 
         Movie movie = moviesRestClient.retrieveMovieById(movieId);
@@ -98,34 +77,33 @@ class MoviesRestClientTest {
 
     @Test
     void retrieveMovieByIdNotFound() {
-        wm.stubFor(get(urlPathMatching("/movieservice/v1/movie/[0-9]+"))
-                .willReturn(aResponse()
-                        .withStatus(404)
-                        .withHeader("Content-Type", "application/json")
-                        .withBodyFile("404-movieId.json")
-                )
-        );
+        wm.stubFor(get(urlPathMatching("/movieservice/v1/movie/[0-9]+")).willReturn(aResponse().withStatus(404).withHeader("Content-Type", "application/json").withBodyFile("404-movieId.json")));
         Integer movieId = 100;
 
-        assertThrows(MovieErrorResponse.class,
-                () -> moviesRestClient.retrieveMovieById(movieId));
+        assertThrows(MovieErrorResponse.class, () -> moviesRestClient.retrieveMovieById(movieId));
     }
 
     @Test
     void retrieveMoviesByName() {
         String movieName = "Avengers";
+        wm.stubFor(get(urlEqualTo(MoviesAppConstants.MOVIE_BY_NAME_QUERY_PARAM_V1 + "?movie_name=" + movieName))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("avengers.json")
+                ));
 
         List<Movie> movies = moviesRestClient.retrieveMoviesByName(movieName);
-
+        String expectedName = "Avengers: End Game";
         assertEquals(4, movies.size());
+        assertEquals(expectedName, movies.get(3).getName());
     }
 
     @Test
     void retrieveMoviesByNameNotFound() {
         String movieName = "ABC";
 
-        assertThrows(MovieErrorResponse.class,
-                () -> moviesRestClient.retrieveMoviesByName(movieName));
+        assertThrows(MovieErrorResponse.class, () -> moviesRestClient.retrieveMoviesByName(movieName));
     }
 
     @Test
@@ -141,8 +119,7 @@ class MoviesRestClientTest {
     void retrieveMoviesByYearNotFound() {
         Integer year = 2999;
 
-        assertThrows(MovieErrorResponse.class,
-                () -> moviesRestClient.retrieveMoviesByYear(year));
+        assertThrows(MovieErrorResponse.class, () -> moviesRestClient.retrieveMoviesByYear(year));
     }
 
     @Test
@@ -161,8 +138,7 @@ class MoviesRestClientTest {
         Movie movie = new Movie(null, "The Matrix", null, LocalDate.of(1999, 3, 24), 1999);
 
         String expectedErrorMessage = "Please pass all the input fields : [name]";
-        assertThrows(MovieErrorResponse.class,
-                () -> moviesRestClient.addMovie(movie), expectedErrorMessage);
+        assertThrows(MovieErrorResponse.class, () -> moviesRestClient.addMovie(movie), expectedErrorMessage);
     }
 
     @Test
@@ -182,8 +158,7 @@ class MoviesRestClientTest {
         String cast = "ABC";
         Movie movie = Movie.builder().cast(cast).build();
 
-        assertThrows(MovieErrorResponse.class,
-                () -> moviesRestClient.updateMovie(movieId, movie));
+        assertThrows(MovieErrorResponse.class, () -> moviesRestClient.updateMovie(movieId, movie));
     }
 
     @Test
@@ -200,7 +175,6 @@ class MoviesRestClientTest {
     @Test
     void deleteMovieNotFound() {
         Integer movieId = 99;
-        assertThrows(MovieErrorResponse.class,
-                () -> moviesRestClient.deleteMovie(movieId));
+        assertThrows(MovieErrorResponse.class, () -> moviesRestClient.deleteMovie(movieId));
     }
 }
