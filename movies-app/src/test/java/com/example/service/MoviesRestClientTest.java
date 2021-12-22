@@ -66,7 +66,12 @@ class MoviesRestClientTest {
 
     @Test
     void retrieveMovieByIdResponseTemplate() {
-        wm.stubFor(get(urlPathMatching("/movieservice/v1/movie/[0-9]")).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBodyFile("movie-template.json")));
+        wm.stubFor(get(urlPathMatching("/movieservice/v1/movie/[0-9]"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("movie-template.json")
+                ));
         Integer movieId = 1;
 
         Movie movie = moviesRestClient.retrieveMovieById(movieId);
@@ -77,7 +82,12 @@ class MoviesRestClientTest {
 
     @Test
     void retrieveMovieByIdNotFound() {
-        wm.stubFor(get(urlPathMatching("/movieservice/v1/movie/[0-9]+")).willReturn(aResponse().withStatus(404).withHeader("Content-Type", "application/json").withBodyFile("404-movieId.json")));
+        wm.stubFor(get(urlPathMatching("/movieservice/v1/movie/[0-9]+"))
+                .willReturn(aResponse()
+                        .withStatus(404)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("404-movieId.json")
+                ));
         Integer movieId = 100;
 
         assertThrows(MovieErrorResponse.class, () -> moviesRestClient.retrieveMovieById(movieId));
@@ -136,6 +146,13 @@ class MoviesRestClientTest {
     @Test
     void retrieveMoviesByNameNotFound() {
         String movieName = "ABC";
+        wm.stubFor(get(urlPathEqualTo(MoviesAppConstants.MOVIE_BY_NAME_QUERY_PARAM_V1))
+                        .withQueryParam("movie_name", equalTo(movieName))
+                .willReturn(aResponse()
+                        .withStatus(404)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("404-movieName.json")
+                ));
 
         assertThrows(MovieErrorResponse.class, () -> moviesRestClient.retrieveMoviesByName(movieName));
     }
