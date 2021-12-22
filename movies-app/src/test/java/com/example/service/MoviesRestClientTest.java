@@ -23,7 +23,7 @@ class MoviesRestClientTest {
     private MoviesRestClient moviesRestClient;
 
     @RegisterExtension
-    static WireMockExtension wm = WireMockExtension
+    private final WireMockExtension wm = WireMockExtension
             .newInstance()
             .options(wireMockConfig()
                     .dynamicPort()
@@ -75,8 +75,25 @@ class MoviesRestClientTest {
         Integer movieId = 1;
 
         Movie movie = moviesRestClient.retrieveMovieById(movieId);
-
+        System.out.println("movie = " + movie);
         assertEquals("Batman Begins", movie.getName());
+    }
+
+    @Test
+    void retrieveMovieByIdResponseTemplate() {
+        wm.stubFor(get(urlPathMatching("/movieservice/v1/movie/[0-9]"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("movie-template.json")
+                )
+        );
+        Integer movieId = 1;
+
+        Movie movie = moviesRestClient.retrieveMovieById(movieId);
+        System.out.println("movie = " + movie);
+        assertEquals("Batman Begins", movie.getName());
+        assertEquals(movieId, movie.getMovieId().intValue());
     }
 
     @Test
