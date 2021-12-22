@@ -147,7 +147,7 @@ class MoviesRestClientTest {
     void retrieveMoviesByNameNotFound() {
         String movieName = "ABC";
         wm.stubFor(get(urlPathEqualTo(MoviesAppConstants.MOVIE_BY_NAME_QUERY_PARAM_V1))
-                        .withQueryParam("movie_name", equalTo(movieName))
+                .withQueryParam("movie_name", equalTo(movieName))
                 .willReturn(aResponse()
                         .withStatus(404)
                         .withHeader("Content-Type", "application/json")
@@ -160,9 +160,15 @@ class MoviesRestClientTest {
     @Test
     void retrieveMoviesByYear() {
         Integer year = 2012;
-
+        wm.stubFor(get(urlPathEqualTo(MoviesAppConstants.MOVIE_BY_YEAR_QUERY_PARAM_V1))
+                .withQueryParam("year", equalTo(String.valueOf(year)))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("year-template.json")
+                ));
         List<Movie> movies = moviesRestClient.retrieveMoviesByYear(year);
-
+        System.out.println("movies = " + movies);
         assertEquals(2, movies.size());
     }
 
