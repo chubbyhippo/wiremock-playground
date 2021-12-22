@@ -117,6 +117,23 @@ class MoviesRestClientTest {
     }
 
     @Test
+    void retrieveMoviesByNameResponseTemplate() {
+        String movieName = "Avengers";
+        wm.stubFor(get(urlEqualTo(MoviesAppConstants.MOVIE_BY_NAME_QUERY_PARAM_V1 + "?movie_name=" + movieName))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("movie-byName-template.json")
+                ));
+
+        List<Movie> movies = moviesRestClient.retrieveMoviesByName(movieName);
+        System.out.println("movies = " + movies);
+        String expectedName = "Avengers: End Game";
+        assertEquals(4, movies.size());
+        assertEquals(expectedName, movies.get(3).getName());
+    }
+
+    @Test
     void retrieveMoviesByNameNotFound() {
         String movieName = "ABC";
 
