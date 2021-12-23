@@ -86,7 +86,7 @@ class MoviesRestClientTest {
                 .willReturn(aResponse()
                         .withStatus(404)
                         .withHeader("Content-Type", "application/json")
-                        .withBodyFile("404-movieId.json")
+                        .withBodyFile("404-movie-id.json")
                 ));
         Integer movieId = 100;
 
