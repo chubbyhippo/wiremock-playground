@@ -133,7 +133,7 @@ class MoviesRestClientTest {
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
-                        .withBodyFile("movie-byName-template.json")
+                        .withBodyFile("movie-by-name-template.json")
                 ));
 
         List<Movie> movies = moviesRestClient.retrieveMoviesByName(movieName);
