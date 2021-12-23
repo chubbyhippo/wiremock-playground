@@ -180,7 +180,7 @@ class MoviesRestClientTest {
                 .willReturn(aResponse()
                         .withStatus(404)
                         .withHeader("Content-Type", "application/json")
-                        .withBodyFile("404-movieyear.json")
+                        .withBodyFile("404-movie-year.json")
                 ));
         assertThrows(MovieErrorResponse.class, () -> moviesRestClient.retrieveMoviesByYear(year));
     }
