@@ -175,7 +175,13 @@ class MoviesRestClientTest {
     @Test
     void retrieveMoviesByYearNotFound() {
         Integer year = 2999;
-
+        wm.stubFor(get(urlPathEqualTo(MoviesAppConstants.MOVIE_BY_YEAR_QUERY_PARAM_V1))
+                .withQueryParam("year", equalTo(String.valueOf(year)))
+                .willReturn(aResponse()
+                        .withStatus(404)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("404-movieyear.json")
+                ));
         assertThrows(MovieErrorResponse.class, () -> moviesRestClient.retrieveMoviesByYear(year));
     }
 
