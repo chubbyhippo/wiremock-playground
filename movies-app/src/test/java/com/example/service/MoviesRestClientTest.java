@@ -14,6 +14,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.example.constants.MoviesAppConstants.ADD_MOVIE_V1;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.jupiter.api.Assertions.*;
@@ -151,7 +152,7 @@ class MoviesRestClientTest {
                 .willReturn(aResponse()
                         .withStatus(404)
                         .withHeader("Content-Type", "application/json")
-                        .withBodyFile("404-movieName.json")
+                        .withBodyFile("404-movie-name.json")
                 ));
 
         assertThrows(MovieErrorResponse.class, () -> moviesRestClient.retrieveMoviesByName(movieName));
@@ -187,9 +188,13 @@ class MoviesRestClientTest {
 
     @Test
     void addMovie() {
-
         Movie movie = new Movie(null, "The Matrix", "Keanu Reeves", LocalDate.of(1999, 3, 24), 1999);
-
+        wm.stubFor(post(urlPathEqualTo(ADD_MOVIE_V1))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("add-movie.json")
+                ));
         Movie addedMovie = moviesRestClient.addMovie(movie);
         System.out.println(addedMovie);
         assertNotNull(addedMovie.getMovieId());
