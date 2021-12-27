@@ -188,7 +188,8 @@ class MoviesRestClientTest {
 
     @Test
     void addMovie() {
-        Movie movie = new Movie(null, "The Matrix", "Keanu Reeves", LocalDate.of(1999, 3, 24), 1999);
+        Movie movie = new Movie(null, "The Matrix", "Keanu Reeves",
+                LocalDate.of(1999, 3, 24), 1999);
         wm.stubFor(post(urlPathEqualTo(ADD_MOVIE_V1))
                 .willReturn(aResponse()
                         .withStatus(200)
@@ -203,7 +204,8 @@ class MoviesRestClientTest {
     @Test
     void addMovieBadRequest() {
 
-        Movie movie = new Movie(null, "The Matrix", null, LocalDate.of(1999, 3, 24), 1999);
+        Movie movie = new Movie(null, "The Matrix", null,
+                LocalDate.of(1999, 3, 24), 1999);
 
         String expectedErrorMessage = "Please pass all the input fields : [name]";
         assertThrows(MovieErrorResponse.class, () -> moviesRestClient.addMovie(movie), expectedErrorMessage);
