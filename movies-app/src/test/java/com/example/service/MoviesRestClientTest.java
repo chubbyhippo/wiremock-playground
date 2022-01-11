@@ -9,6 +9,7 @@ import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDate;
@@ -191,8 +192,8 @@ class MoviesRestClientTest {
         Movie movie = new Movie(null, "The Matrix", "Keanu Reeves",
                 LocalDate.of(1999, 3, 24), 1999);
         wm.stubFor(post(urlPathEqualTo(ADD_MOVIE_V1))
-                        .withRequestBody(matchingJsonPath("$.name", equalTo("The Matrix")))
-                        .withRequestBody(matchingJsonPath("$.cast", containing("Keanu")))
+                .withRequestBody(matchingJsonPath("$.name", equalTo("The Matrix")))
+                .withRequestBody(matchingJsonPath("$.cast", containing("Keanu")))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
@@ -202,6 +203,7 @@ class MoviesRestClientTest {
         System.out.println(addedMovie);
         assertNotNull(addedMovie.getMovieId());
     }
+
     @Test
     void addMovieResponseTemplate() {
         Movie movie = new Movie(null, "The Matrix", "Keanu Reeves",
@@ -218,12 +220,19 @@ class MoviesRestClientTest {
         System.out.println(addedMovie);
         assertNotNull(addedMovie.getMovieId());
     }
+
     @Test
     void addMovieBadRequest() {
 
-        Movie movie = new Movie(null, "The Matrix", null,
+        Movie movie = new Movie(null, null, "Keanu Reeves",
                 LocalDate.of(1999, 3, 24), 1999);
-
+        wm.stubFor(post(urlPathEqualTo(ADD_MOVIE_V1))
+                .withRequestBody(matchingJsonPath("$.cast", containing("Keanu")))
+                .willReturn(aResponse()
+                        .withStatus(400)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("400-invalid-input.json")
+                ));
         String expectedErrorMessage = "Please pass all the input fields : [name]";
         assertThrows(MovieErrorResponse.class, () -> moviesRestClient.addMovie(movie), expectedErrorMessage);
     }
