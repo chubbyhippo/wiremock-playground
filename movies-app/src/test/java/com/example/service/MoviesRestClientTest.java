@@ -202,7 +202,22 @@ class MoviesRestClientTest {
         System.out.println(addedMovie);
         assertNotNull(addedMovie.getMovieId());
     }
-
+    @Test
+    void addMovieResponseTemplate() {
+        Movie movie = new Movie(null, "The Matrix", "Keanu Reeves",
+                LocalDate.of(1999, 3, 24), 1999);
+        wm.stubFor(post(urlPathEqualTo(ADD_MOVIE_V1))
+                .withRequestBody(matchingJsonPath("$.name", equalTo("The Matrix")))
+                .withRequestBody(matchingJsonPath("$.cast", containing("Keanu")))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("add-movies-template.json")
+                ));
+        Movie addedMovie = moviesRestClient.addMovie(movie);
+        System.out.println(addedMovie);
+        assertNotNull(addedMovie.getMovieId());
+    }
     @Test
     void addMovieBadRequest() {
 
