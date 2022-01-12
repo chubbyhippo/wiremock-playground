@@ -259,7 +259,12 @@ class MoviesRestClientTest {
         Integer movieId = 999;
         String cast = "ABC";
         Movie movie = Movie.builder().cast(cast).build();
-
+        wm.stubFor(put(urlPathMatching("/movieservice/v1/movie/[0-9]+"))
+                .withRequestBody(matchingJsonPath("$.cast", containing(cast)))
+                .willReturn(aResponse()
+                        .withStatus(404)
+                        .withHeader("Content-Type", "application/json")
+                ));
         assertThrows(MovieErrorResponse.class, () -> moviesRestClient.updateMovie(movieId, movie));
     }
 
