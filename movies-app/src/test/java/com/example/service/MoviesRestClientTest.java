@@ -296,6 +296,11 @@ class MoviesRestClientTest {
     @Test
     void deleteMovieNotFound() {
         Integer movieId = 99;
+        wm.stubFor(delete(urlPathMatching("/movieservice/v1/movie/[0-9]+"))
+                .willReturn(aResponse()
+                        .withStatus(404)
+                        .withHeader("Content-Type", "application/json")
+                ));
         assertThrows(MovieErrorResponse.class, () -> moviesRestClient.deleteMovie(movieId));
     }
 }
