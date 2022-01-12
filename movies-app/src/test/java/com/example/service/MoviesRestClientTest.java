@@ -242,9 +242,15 @@ class MoviesRestClientTest {
         Integer movieId = 3;
         String cast = "ABC";
         Movie movie = Movie.builder().cast(cast).build();
-
+        wm.stubFor(put(urlPathMatching("/movieservice/v1/movie/[0-9]+"))
+                .withRequestBody(matchingJsonPath("$.cast", containing(cast)))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("update-movie-template.json")
+                ));
         Movie updatedMovie = moviesRestClient.updateMovie(movieId, movie);
-
+        System.out.println(updatedMovie);
         assertTrue(updatedMovie.getCast().contains(cast));
     }
 
