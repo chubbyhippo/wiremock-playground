@@ -269,12 +269,27 @@ class MoviesRestClientTest {
 
     @Test
     void deleteMovie() {
-        Movie movie = new Movie(null, "The Matrix 99", "Keanu Reeves", LocalDate.of(1999, 3, 24), 1999);
+        Movie movie = new Movie(null, "The Matrix", "Keanu Reeves", LocalDate.of(1999, 3, 24), 1999);
+        wm.stubFor(post(urlPathEqualTo(ADD_MOVIE_V1))
+                .withRequestBody(matchingJsonPath("$.name", equalTo("The Matrix")))
+                .withRequestBody(matchingJsonPath("$.cast", containing("Keanu")))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("add-movie.json")
+                ));
+
         Movie addedMovie = moviesRestClient.addMovie(movie);
+        String expectedErrorMessage = "Movie Deleted Successfully";
+        wm.stubFor(delete(urlPathMatching("/movieservice/v1/movie/[0-9]+"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(expectedErrorMessage)
+                ));
 
         String responseMessage = moviesRestClient.deleteMovie(addedMovie.getMovieId());
 
-        String expectedErrorMessage = "Movie Deleted Successfully";
         assertEquals(expectedErrorMessage, responseMessage);
     }
 
