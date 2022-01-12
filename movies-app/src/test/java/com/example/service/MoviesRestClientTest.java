@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static com.example.constants.MoviesAppConstants.ADD_MOVIE_V1;
+import static com.example.constants.MoviesAppConstants.MOVIE_BY_NAME_QUERY_PARAM_V1;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.jupiter.api.Assertions.*;
@@ -302,5 +303,31 @@ class MoviesRestClientTest {
                         .withHeader("Content-Type", "application/json")
                 ));
         assertThrows(MovieErrorResponse.class, () -> moviesRestClient.deleteMovie(movieId));
+    }
+
+    @Test
+    void deleteMovieByName() {
+        Movie movie = new Movie(null, "The Matrix", "Keanu Reeves", LocalDate.of(1999, 3, 24), 1999);
+        wm.stubFor(post(urlPathEqualTo(ADD_MOVIE_V1))
+                .withRequestBody(matchingJsonPath("$.name", equalTo("The Matrix")))
+                .withRequestBody(matchingJsonPath("$.cast", containing("Keanu")))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("add-movie.json")
+                ));
+
+        Movie addedMovie = moviesRestClient.addMovie(movie);
+        String expectedErrorMessage = "Movie Deleted Successfully";
+        wm.stubFor(delete(urlPathEqualTo(MOVIE_BY_NAME_QUERY_PARAM_V1))
+                .withQueryParam("movie_name", equalTo(addedMovie.getName()))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                ));
+
+        String responseMessage = moviesRestClient.deleteMovieByName(addedMovie.getName());
+
+        assertEquals(expectedErrorMessage, responseMessage);
     }
 }
