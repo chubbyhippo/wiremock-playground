@@ -15,7 +15,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import static org.junit.jupiter.api.Assertions.*;
 
 @WireMockTest
-public class MoviesRestClientServerFaultTest {
+class MoviesRestClientServerFaultTest {
     private MoviesRestClient moviesRestClient;
 
     @RegisterExtension
