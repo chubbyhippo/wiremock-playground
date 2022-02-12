@@ -334,5 +334,8 @@ class MoviesRestClientTest {
         wm.verify(postRequestedFor(urlPathEqualTo(ADD_MOVIE_V1))
                 .withRequestBody(matchingJsonPath("$.name", equalTo("The Matrix")))
                 .withRequestBody(matchingJsonPath("$.cast", containing("Keanu"))));
+
+        wm.verify(deleteRequestedFor(urlPathEqualTo(MOVIE_BY_NAME_QUERY_PARAM_V1))
+                .withQueryParam("movie_name", equalTo(addedMovie.getName())));
     }
 }
