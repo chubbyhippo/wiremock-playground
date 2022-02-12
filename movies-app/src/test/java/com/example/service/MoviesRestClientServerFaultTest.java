@@ -65,4 +65,14 @@ class MoviesRestClientServerFaultTest {
                 " Connection prematurely closed BEFORE response", movieErrorResponse.getMessage());
 
     }
+
+    @Test
+    void retrieveAllMoviesWithRandomDataThenClose() {
+        wm.stubFor(get(anyUrl())
+                .willReturn(aResponse().withFault(Fault.RANDOM_DATA_THEN_CLOSE)));
+
+        assertThrows(MovieErrorResponse.class,
+                () -> moviesRestClient.retrieveAllMovies());
+
+    }
 }
