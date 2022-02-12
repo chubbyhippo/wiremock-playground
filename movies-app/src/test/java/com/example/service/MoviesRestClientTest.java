@@ -331,7 +331,7 @@ class MoviesRestClientTest {
         assertEquals(expectedErrorMessage, responseMessage);
 
 
-        wm.verify(postRequestedFor(urlPathEqualTo(ADD_MOVIE_V1))
+        wm.verify(exactly(1), postRequestedFor(urlPathEqualTo(ADD_MOVIE_V1))
                 .withRequestBody(matchingJsonPath("$.name", equalTo("The Matrix")))
                 .withRequestBody(matchingJsonPath("$.cast", containing("Keanu"))));
 
