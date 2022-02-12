@@ -17,11 +17,22 @@ public class MoviesRestClient {
     private final WebClient webClient;
 
     public List<Movie> retrieveAllMovies() {
-        return webClient.get().uri(MoviesAppConstants.GET_ALL_MOVIES_V1)
-                .retrieve()
-                .bodyToFlux(Movie.class)
-                .collectList()
-                .block();
+
+        try {
+            return webClient.get().uri(MoviesAppConstants.GET_ALL_MOVIES_V1)
+                    .retrieve()
+                    .bodyToFlux(Movie.class)
+                    .collectList()
+                    .block();
+        } catch (WebClientResponseException e) {
+            log.error("WebClientResponseException in retrieveAllMovies. Status code is {} and the message is {} ",
+                    e.getRawStatusCode(),
+                    e.getResponseBodyAsString());
+            throw new MovieErrorResponse(e.getStatusText(), e);
+        } catch (Exception e) {
+            log.error("Exception in retrieveAllMovies and the message is {} ", e.getMessage());
+            throw new MovieErrorResponse(e);
+        }
     }
 
     public Movie retrieveMovieById(Integer movieId) {
