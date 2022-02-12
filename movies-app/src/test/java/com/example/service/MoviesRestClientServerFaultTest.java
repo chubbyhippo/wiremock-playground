@@ -2,6 +2,7 @@ package com.example.service;
 
 import com.example.exception.MovieErrorResponse;
 import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer;
+import com.github.tomakehurst.wiremock.http.Fault;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,6 +49,20 @@ class MoviesRestClientServerFaultTest {
         MovieErrorResponse movieErrorResponse = assertThrows(MovieErrorResponse.class,
                 () -> moviesRestClient.retrieveAllMovies());
         assertEquals("Service Unavailable", movieErrorResponse.getMessage());
+
+    }
+
+    @Test
+    void retrieveAllMoviesWithFaultResponse() {
+        wm.stubFor(get(anyUrl())
+                .willReturn(aResponse().withFault(Fault.EMPTY_RESPONSE)));
+
+        MovieErrorResponse movieErrorResponse = assertThrows(MovieErrorResponse.class,
+                () -> moviesRestClient.retrieveAllMovies());
+        assertEquals("org.springframework.web.reactive.function" +
+                ".client.WebClientRequestException: Connection prematurely closed BEFORE response; " +
+                "nested exception is reactor.netty.http.client.PrematureCloseException:" +
+                " Connection prematurely closed BEFORE response", movieErrorResponse.getMessage());
 
     }
 }
