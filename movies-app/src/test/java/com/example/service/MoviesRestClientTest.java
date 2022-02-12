@@ -329,5 +329,10 @@ class MoviesRestClientTest {
         String responseMessage = moviesRestClient.deleteMovieByName(addedMovie.getName());
 
         assertEquals(expectedErrorMessage, responseMessage);
+
+
+        wm.verify(postRequestedFor(urlPathEqualTo(ADD_MOVIE_V1))
+                .withRequestBody(matchingJsonPath("$.name", equalTo("The Matrix")))
+                .withRequestBody(matchingJsonPath("$.cast", containing("Keanu"))));
     }
 }
