@@ -11,7 +11,9 @@ import io.netty.handler.timeout.WriteTimeoutHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.TcpClient;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
@@ -25,21 +27,32 @@ class MoviesRestClientServerFaultTest {
 
     @RegisterExtension
     private final WireMockExtension wm =
-            WireMockExtension.newInstance().options(wireMockConfig().dynamicPort().extensions(new ResponseTemplateTransformer(true))).build();
+            WireMockExtension.newInstance()
+                    .options(wireMockConfig()
+                            .dynamicPort()
+                            .extensions(new ResponseTemplateTransformer(true)))
+                    .build();
 
     TcpClient tcpClient = TcpClient.create()
             .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
-            .doOnConnected(connection -> {
-                connection.addHandlerLast(new ReadTimeoutHandler(5))
-                        .addHandlerLast(new WriteTimeoutHandler(5));
-            });
+            .doOnConnected(connection ->
+                    connection.addHandlerLast(new ReadTimeoutHandler(5))
+                            .addHandlerLast(new WriteTimeoutHandler(5)));
 
+    HttpClient httpClient = HttpClient.create()
+            .doOnConnected(connection -> connection
+                    .addHandler(new ReadTimeoutHandler(5))
+                    .addHandler(new WriteTimeoutHandler(5)));
     @BeforeEach
     void setUp() {
         var port = wm.getPort();
         var baseUrl = String.format("http://localhost:%s", port);
         System.out.println("baseUrl = " + baseUrl);
-        var webClient = WebClient.create(baseUrl);
+
+        var webClient = WebClient.builder()
+                .clientConnector(new ReactorClientHttpConnector(httpClient))
+                .build();
+
         moviesRestClient = new MoviesRestClient(webClient);
     }
 
