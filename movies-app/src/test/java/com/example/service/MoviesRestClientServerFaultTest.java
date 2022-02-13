@@ -5,10 +5,14 @@ import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemp
 import com.github.tomakehurst.wiremock.http.Fault;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import io.netty.channel.ChannelOption;
+import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.handler.timeout.WriteTimeoutHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.netty.tcp.TcpClient;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
@@ -22,6 +26,13 @@ class MoviesRestClientServerFaultTest {
     @RegisterExtension
     private final WireMockExtension wm =
             WireMockExtension.newInstance().options(wireMockConfig().dynamicPort().extensions(new ResponseTemplateTransformer(true))).build();
+
+    TcpClient tcpClient = TcpClient.create()
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
+            .doOnConnected(connection -> {
+                connection.addHandlerLast(new ReadTimeoutHandler(5))
+                        .addHandlerLast(new WriteTimeoutHandler(5));
+            });
 
     @BeforeEach
     void setUp() {
