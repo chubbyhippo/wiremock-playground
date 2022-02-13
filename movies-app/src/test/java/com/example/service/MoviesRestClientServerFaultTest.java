@@ -33,12 +33,6 @@ class MoviesRestClientServerFaultTest {
                             .extensions(new ResponseTemplateTransformer(true)))
                     .build();
 
-    TcpClient tcpClient = TcpClient.create()
-            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
-            .doOnConnected(connection ->
-                    connection.addHandlerLast(new ReadTimeoutHandler(5))
-                            .addHandlerLast(new WriteTimeoutHandler(5)));
-
     HttpClient httpClient = HttpClient.create()
             .doOnConnected(connection -> connection
                     .addHandler(new ReadTimeoutHandler(5))
