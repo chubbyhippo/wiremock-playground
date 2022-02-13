@@ -5,7 +5,6 @@ import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemp
 import com.github.tomakehurst.wiremock.http.Fault;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
-import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
-import reactor.netty.tcp.TcpClient;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
@@ -37,6 +35,7 @@ class MoviesRestClientServerFaultTest {
             .doOnConnected(connection -> connection
                     .addHandler(new ReadTimeoutHandler(5))
                     .addHandler(new WriteTimeoutHandler(5)));
+
     @BeforeEach
     void setUp() {
         var port = wm.getPort();
@@ -99,6 +98,16 @@ class MoviesRestClientServerFaultTest {
     void retrieveAllMoviesWithFixedDelay() {
         wm.stubFor(get(anyUrl())
                 .willReturn(ok().withFixedDelay(10000)));
+
+        assertThrows(MovieErrorResponse.class,
+                () -> moviesRestClient.retrieveAllMovies());
+
+    }
+
+    @Test
+    void retrieveAllMoviesWithRandomDelay() {
+        wm.stubFor(get(anyUrl())
+                .willReturn(ok().withUniformRandomDelay(5500, 10000)));
 
         assertThrows(MovieErrorResponse.class,
                 () -> moviesRestClient.retrieveAllMovies());
