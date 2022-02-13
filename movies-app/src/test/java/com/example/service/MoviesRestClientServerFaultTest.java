@@ -50,6 +50,7 @@ class MoviesRestClientServerFaultTest {
         System.out.println("baseUrl = " + baseUrl);
 
         var webClient = WebClient.builder()
+                .baseUrl(baseUrl)
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
                 .build();
 
@@ -94,6 +95,16 @@ class MoviesRestClientServerFaultTest {
     void retrieveAllMoviesWithRandomDataThenClose() {
         wm.stubFor(get(anyUrl())
                 .willReturn(aResponse().withFault(Fault.RANDOM_DATA_THEN_CLOSE)));
+
+        assertThrows(MovieErrorResponse.class,
+                () -> moviesRestClient.retrieveAllMovies());
+
+    }
+
+    @Test
+    void retrieveAllMoviesWithFixedDelay() {
+        wm.stubFor(get(anyUrl())
+                .willReturn(ok().withFixedDelay(10000)));
 
         assertThrows(MovieErrorResponse.class,
                 () -> moviesRestClient.retrieveAllMovies());
