@@ -36,10 +36,10 @@ class MoviesRestClientServerFaultTest {
 
     @BeforeEach
     void setUp() {
-        int port = wm.getPort();
-        String baseUrl = String.format("http://localhost:%s", port);
+        var port = wm.getPort();
+        var baseUrl = String.format("http://localhost:%s", port);
         System.out.println("baseUrl = " + baseUrl);
-        WebClient webClient = WebClient.create(baseUrl);
+        var webClient = WebClient.create(baseUrl);
         moviesRestClient = new MoviesRestClient(webClient);
     }
 
@@ -57,7 +57,7 @@ class MoviesRestClientServerFaultTest {
                         .withStatus(503)
                         .withBody("Service Unavailable")));
 
-        MovieErrorResponse movieErrorResponse = assertThrows(MovieErrorResponse.class,
+        var movieErrorResponse = assertThrows(MovieErrorResponse.class,
                 () -> moviesRestClient.retrieveAllMovies());
         assertEquals("Service Unavailable", movieErrorResponse.getMessage());
 
@@ -68,7 +68,7 @@ class MoviesRestClientServerFaultTest {
         wm.stubFor(get(anyUrl())
                 .willReturn(aResponse().withFault(Fault.EMPTY_RESPONSE)));
 
-        MovieErrorResponse movieErrorResponse = assertThrows(MovieErrorResponse.class,
+        var movieErrorResponse = assertThrows(MovieErrorResponse.class,
                 () -> moviesRestClient.retrieveAllMovies());
         assertEquals("org.springframework.web.reactive.function" +
                 ".client.WebClientRequestException: Connection prematurely closed BEFORE response; " +
