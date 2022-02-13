@@ -24,7 +24,7 @@ class DataInitializer(
 
     private fun createMovieInfosAndReviews(movieAndReviewData: MutableMap<MovieInfo, Review>) {
 
-       movieAndReviewData
+        movieAndReviewData
             .map { map ->
                 val savedMovieInfo = Mono.just(map.key)
                     .flatMap {
@@ -45,15 +45,15 @@ class DataInitializer(
 
         listMovieIds()
         movieInfoService.getAllMovies()
-                    .count()
-                  .subscribe {
+            .count()
+            .subscribe {
                 logger.info("No of persisted Movies are : $it")
             }
     }
 
-    fun listMovieIds(){
+    fun listMovieIds() {
 
-        val movieInfoIdList  = movieInfoService.getAllMovies()
+        val movieInfoIdList = movieInfoService.getAllMovies()
             .mapNotNull { it::movieInfoId.get() }
             .collectList()
 
@@ -68,84 +68,50 @@ class DataInitializer(
                 null,
                 "Batman Begins",
                 2005,
-                mutableListOf("Christian Bale", "Michael Cane"),
+                "Christian Bale",
                 LocalDate.parse("2005-06-15")
             ),
             MovieInfo(
                 null,
                 "The Dark Knight",
                 2008,
-                mutableListOf("Christian Bale", "HeathLedger"),
+                "Christian Bale",
                 LocalDate.parse("2008-07-18")
             ),
             MovieInfo(
                 null,
                 "Dark Knight Rises",
                 2008,
-                mutableListOf("Christian Bale", "Tom Hardy"),
+                "Christian Bale",
                 LocalDate.parse("2012-07-20")
             ),
             MovieInfo(
-                null, "The Avengers", 2012, mutableListOf(
-                    "Robert Downey Jr.", "Chris Evans", "Mark Ruffalo", "Chris Hemsworth",
-                    "Scarlett Johansson", "Jeremy Renner", "Tom Hiddleston", "Samuel L. Jackson"
-                ), LocalDate.parse("2012-04-11")
+                null,
+                "The Avengers",
+                2012,
+                "Chris Hemsworth",
+                LocalDate.parse("2012-04-11")
             ),
             MovieInfo(
-                null, "Avengers: Age of Ultron", 2015, mutableListOf(
-                    "Robert Downey Jr.",
-                    "Chris Evans",
-                    "Mark Ruffalo",
-                    "Chris Hemsworth",
-                    "Scarlett Johansson",
-                    "Jeremy Renner",
-                    "Tom Hiddleston",
-                    "Samuel L. Jackson",
-                    "Don Cheadle",
-                    "Idris Elba"
-                ), LocalDate.parse("2015-04-13")
+                null,
+                "Avengers: Age of Ultron",
+                2015,
+                "Robert Downey Jr.",
+                LocalDate.parse("2015-04-13")
             ),
             MovieInfo(
-                null, "Avengers: Infinity War", 2018, mutableListOf(
-                    "Robert Downey Jr.",
-                    "Chris Evans",
-                    "Mark Ruffalo",
-                    "Chris Hemsworth",
-                    "Scarlett Johansson",
-                    "Jeremy Renner",
-                    "Tom Hiddleston",
-                    "Samuel L. Jackson",
-                    "Don Cheadle",
-                    "Idris Elba",
-                    "Chris Patt",
-                    "Elizabeth Olsen",
-                    "Dave Bautista",
-                    "Benedict Cumberbatch",
-                    "Tom Holland",
-                    "Chadwick Boseman"
-                ), LocalDate.parse("2018-04-23")
+                null,
+                "Avengers: Infinity War",
+                2018,
+                "Robert Downey Jr.",
+                LocalDate.parse("2018-04-23")
             ),
             MovieInfo(
-                null, "Avengers: Infinity War", 2019, mutableListOf(
-                    "Robert Downey Jr.",
-                    "Chris Evans",
-                    "Mark Ruffalo",
-                    "Chris Hemsworth",
-                    "Scarlett Johansson",
-                    "Jeremy Renner",
-                    "Tom Hiddleston",
-                    "Samuel L. Jackson",
-                    "Don Cheadle",
-                    "Idris Elba",
-                    "Chris Patt",
-                    "Elizabeth Olsen",
-                    "Dave Bautista",
-                    "Benedict Cumberbatch",
-                    "Tom Holland",
-                    "Chadwick Boseman",
-                    "Gwyneth Paltrow",
-                    "Brie Larson"
-                ), LocalDate.parse("2019-04-22")
+                null,
+                "Avengers: Infinity War",
+                2019,
+                "Chris Patt",
+                LocalDate.parse("2019-04-22")
             )
         )
 
@@ -158,84 +124,58 @@ class DataInitializer(
                 null,
                 "Batman Begins",
                 2005,
-                mutableListOf("Christian Bale", "Michael Cane"),
+                "Christian Bale",
                 LocalDate.parse("2005-06-15")
             ) to Review(null, null, 8.2, "Nolan is the real superhero"),
             MovieInfo(
                 null,
                 "The Dark Knight",
                 2008,
-                mutableListOf("Christian Bale", "HeathLedger"),
+                "Christian Bale",
                 LocalDate.parse("2008-07-18")
             ) to Review(null, null, 9.0, "MASTERPIECE"),
             MovieInfo(
                 null,
                 "Dark Knight Rises",
                 2008,
-                mutableListOf("Christian Bale", "Tom Hardy"),
+                "Christian Bale",
                 LocalDate.parse("2012-07-20")
             ) to Review(null, null, 8.4, "EPIC"),
             MovieInfo(
-                null, "The Avengers", 2012, mutableListOf(
-                    "Robert Downey Jr.", "Chris Evans", "Mark Ruffalo", "Chris Hemsworth",
-                    "Scarlett Johansson", "Jeremy Renner", "Tom Hiddleston", "Samuel L. Jackson"
-                ), LocalDate.parse("2012-04-11")
+                null,
+                "The Avengers",
+                2012,
+                "Chris Hemsworth",
+                LocalDate.parse("2012-04-11")
             ) to Review(null, null, 8.0, "Avengers is an amazing movie with an amazing cast"),
             MovieInfo(
-                null, "Avengers: Age of Ultron", 2015, mutableListOf(
-                    "Robert Downey Jr.",
-                    "Chris Evans",
-                    "Mark Ruffalo",
-                    "Chris Hemsworth",
-                    "Scarlett Johansson",
-                    "Jeremy Renner",
-                    "Tom Hiddleston",
-                    "Samuel L. Jackson",
-                    "Don Cheadle",
-                    "Idris Elba"
-                ), LocalDate.parse("2015-04-13")
-            ) to Review(null, null, 7.3, "Avengers: Age of Ultron is a damn good Superhero flick, excellent sequel!"),
+                null,
+                "Avengers: Age of Ultron",
+                2015,
+                "Robert Downey Jr.",
+                LocalDate.parse("2015-04-13")
+            ) to Review(
+                null,
+                null,
+                7.3,
+                "Avengers: Age of Ultron is a damn good Superhero flick, excellent sequel!"
+            ),
             MovieInfo(
-                null, "Avengers: Infinity War", 2018, mutableListOf(
-                    "Robert Downey Jr.",
-                    "Chris Evans",
-                    "Mark Ruffalo",
-                    "Chris Hemsworth",
-                    "Scarlett Johansson",
-                    "Jeremy Renner",
-                    "Tom Hiddleston",
-                    "Samuel L. Jackson",
-                    "Don Cheadle",
-                    "Idris Elba",
-                    "Chris Patt",
-                    "Elizabeth Olsen",
-                    "Dave Bautista",
-                    "Benedict Cumberbatch",
-                    "Tom Holland",
-                    "Chadwick Boseman"
-                ), LocalDate.parse("2018-04-23")
-            ) to Review(null, null, 8.4, "Best Cliffhanger of all Time"),
+                null, "Avengers: Infinity War", 2018,
+                "Tom Holland",
+                LocalDate.parse("2018-04-23")
+            ) to Review(
+                null,
+                null,
+                8.4,
+                "Best Cliffhanger of all Time"
+            ),
             MovieInfo(
-                null, "Avengers: Infinity War", 2019, mutableListOf(
-                    "Robert Downey Jr.",
-                    "Chris Evans",
-                    "Mark Ruffalo",
-                    "Chris Hemsworth",
-                    "Scarlett Johansson",
-                    "Jeremy Renner",
-                    "Tom Hiddleston",
-                    "Samuel L. Jackson",
-                    "Don Cheadle",
-                    "Idris Elba",
-                    "Chris Patt",
-                    "Elizabeth Olsen",
-                    "Dave Bautista",
-                    "Benedict Cumberbatch",
-                    "Tom Holland",
-                    "Chadwick Boseman",
-                    "Gwyneth Paltrow",
-                    "Brie Larson"
-                ), LocalDate.parse("2019-04-22")
+                null,
+                "Avengers: Infinity War",
+                2019,
+                "Robert Downey Jr.",
+                LocalDate.parse("2019-04-22")
             ) to Review(null, null, 8.4, "The ending made all 22 movies worth it"),
         )
 

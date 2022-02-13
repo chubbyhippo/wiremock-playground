@@ -12,9 +12,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Movie {
-    @JsonProperty("movie_id")
-    private Integer movieId;
+public class MovieInfo {
+    private Long movieInfoId;
     private String name;
     private String cast;
     @JsonProperty("release_date")

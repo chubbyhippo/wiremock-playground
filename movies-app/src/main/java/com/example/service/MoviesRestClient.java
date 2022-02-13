@@ -1,7 +1,7 @@
 package com.example.service;
 
 import com.example.constants.MoviesAppConstants;
-import com.example.dto.Movie;
+import com.example.dto.MovieInfo;
 import com.example.exception.MovieErrorResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,12 +16,12 @@ import java.util.List;
 public class MoviesRestClient {
     private final WebClient webClient;
 
-    public List<Movie> retrieveAllMovies() {
+    public List<MovieInfo> retrieveAllMovies() {
 
         try {
             return webClient.get().uri(MoviesAppConstants.GET_ALL_MOVIES_V1)
                     .retrieve()
-                    .bodyToFlux(Movie.class)
+                    .bodyToFlux(MovieInfo.class)
                     .collectList()
                     .block();
         } catch (WebClientResponseException e) {
@@ -35,11 +35,11 @@ public class MoviesRestClient {
         }
     }
 
-    public Movie retrieveMovieById(Integer movieId) {
+    public MovieInfo retrieveMovieById(Integer movieId) {
         try {
             return webClient.get().uri(MoviesAppConstants.MOVIE_BY_ID_PATH_PARAM_V1, movieId)
                     .retrieve()
-                    .bodyToMono(Movie.class)
+                    .bodyToMono(MovieInfo.class)
                     .block();
         } catch (WebClientResponseException e) {
             log.error("WebClientResponseException in retrieveMovieById. Status code is {} and the message is {} ",
@@ -52,7 +52,7 @@ public class MoviesRestClient {
         }
     }
 
-    public List<Movie> retrieveMoviesByName(String name) {
+    public List<MovieInfo> retrieveMoviesByName(String name) {
         String retrieveByNameUri = UriComponentsBuilder.fromUriString(MoviesAppConstants.MOVIE_BY_NAME_QUERY_PARAM_V1)
                 .queryParam("movie_name", name)
                 .buildAndExpand()
@@ -62,7 +62,7 @@ public class MoviesRestClient {
             return webClient.get()
                     .uri(retrieveByNameUri)
                     .retrieve()
-                    .bodyToFlux(Movie.class)
+                    .bodyToFlux(MovieInfo.class)
                     .collectList()
                     .block();
         } catch (WebClientResponseException e) {
@@ -76,7 +76,7 @@ public class MoviesRestClient {
         }
     }
 
-    public List<Movie> retrieveMoviesByYear(Integer year) {
+    public List<MovieInfo> retrieveMoviesByYear(Integer year) {
         String retrieveByYearUri = UriComponentsBuilder.fromUriString(MoviesAppConstants.MOVIE_BY_YEAR_QUERY_PARAM_V1)
                 .queryParam("year", year)
                 .buildAndExpand()
@@ -86,7 +86,7 @@ public class MoviesRestClient {
             return webClient.get()
                     .uri(retrieveByYearUri)
                     .retrieve()
-                    .bodyToFlux(Movie.class)
+                    .bodyToFlux(MovieInfo.class)
                     .collectList()
                     .block();
         } catch (WebClientResponseException e) {
@@ -100,13 +100,13 @@ public class MoviesRestClient {
         }
     }
 
-    public Movie addMovie(Movie movie) {
+    public MovieInfo addMovie(MovieInfo movieInfo) {
         try {
             return webClient.post()
                     .uri(MoviesAppConstants.ADD_MOVIE_V1)
-                    .bodyValue(movie)
+                    .bodyValue(movieInfo)
                     .retrieve()
-                    .bodyToMono(Movie.class)
+                    .bodyToMono(MovieInfo.class)
                     .block();
         } catch (WebClientResponseException e) {
             log.error("WebClientResponseException in addMovie. Status code is {} and the message is {} ",
@@ -119,13 +119,13 @@ public class MoviesRestClient {
         }
     }
 
-    public Movie updateMovie(Integer movieId, Movie movie) {
+    public MovieInfo updateMovie(Integer movieId, MovieInfo movieInfo) {
         try {
             return webClient.put()
                     .uri(MoviesAppConstants.MOVIE_BY_ID_PATH_PARAM_V1, movieId)
-                    .bodyValue(movie)
+                    .bodyValue(movieInfo)
                     .retrieve()
-                    .bodyToMono(Movie.class)
+                    .bodyToMono(MovieInfo.class)
                     .block();
         } catch (WebClientResponseException e) {
             log.error("WebClientResponseException in updateMovie. Status code is {} and the message is {} ",
@@ -138,7 +138,7 @@ public class MoviesRestClient {
         }
     }
 
-    public String deleteMovie(Integer movieId) {
+    public String deleteMovie(Long movieId) {
         try {
             return webClient.delete()
                     .uri(MoviesAppConstants.MOVIE_BY_ID_PATH_PARAM_V1, movieId)

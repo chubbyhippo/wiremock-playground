@@ -16,6 +16,7 @@ data class MovieInfo(
     var year: Int? = null,
     @field:Size(min = 1)
     @Valid
-    var cast: MutableList<String?>? = null,
-    var release_date: LocalDate? = null) {
+    var cast: String? = null,
+    var release_date: LocalDate? = null
+) {
 }

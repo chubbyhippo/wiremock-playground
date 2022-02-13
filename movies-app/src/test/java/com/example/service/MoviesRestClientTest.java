@@ -1,7 +1,7 @@
 package com.example.service;
 
 import com.example.constants.MoviesAppConstants;
-import com.example.dto.Movie;
+import com.example.dto.MovieInfo;
 import com.example.exception.MovieErrorResponse;
 import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
@@ -12,7 +12,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import static com.example.constants.MoviesAppConstants.ADD_MOVIE_V1;
 import static com.example.constants.MoviesAppConstants.MOVIE_BY_NAME_QUERY_PARAM_V1;
@@ -58,7 +57,7 @@ class MoviesRestClientTest {
 
     @Test
     void retrieveMovieById() {
-        wm.stubFor(get(urlPathMatching("/movieservice/v1/movie/[0-9]")).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBodyFile("movie.json")));
+        wm.stubFor(get(urlPathMatching("/movies/v1/movie_infos/[0-9]")).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBodyFile("movie.json")));
         Integer movieId = 1;
 
         var movie = moviesRestClient.retrieveMovieById(movieId);
@@ -68,7 +67,7 @@ class MoviesRestClientTest {
 
     @Test
     void retrieveMovieByIdResponseTemplate() {
-        wm.stubFor(get(urlPathMatching("/movieservice/v1/movie/[0-9]"))
+        wm.stubFor(get(urlPathMatching("/movies/v1/movie_infos/[0-9]"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
@@ -79,12 +78,12 @@ class MoviesRestClientTest {
         var movie = moviesRestClient.retrieveMovieById(movieId);
         System.out.println("movie = " + movie);
         assertEquals("Batman Begins", movie.getName());
-        assertEquals(movieId, movie.getMovieId().intValue());
+        assertEquals(movieId, movie.getMovieInfoId().intValue());
     }
 
     @Test
     void retrieveMovieByIdNotFound() {
-        wm.stubFor(get(urlPathMatching("/movieservice/v1/movie/[0-9]+"))
+        wm.stubFor(get(urlPathMatching("/v1/movie_infos/[0-9]+"))
                 .willReturn(aResponse()
                         .withStatus(404)
                         .withHeader("Content-Type", "application/json")
@@ -189,7 +188,7 @@ class MoviesRestClientTest {
 
     @Test
     void addMovie() {
-        var movie = new Movie(null, "The Matrix", "Keanu Reeves",
+        var movie = new MovieInfo(null, "The Matrix", "Keanu Reeves",
                 LocalDate.of(1999, 3, 24), 1999);
         wm.stubFor(post(urlPathEqualTo(ADD_MOVIE_V1))
                 .withRequestBody(matchingJsonPath("$.name", equalTo("The Matrix")))
@@ -201,12 +200,12 @@ class MoviesRestClientTest {
                 ));
         var addedMovie = moviesRestClient.addMovie(movie);
         System.out.println(addedMovie);
-        assertNotNull(addedMovie.getMovieId());
+        assertNotNull(addedMovie.getMovieInfoId());
     }
 
     @Test
     void addMovieResponseTemplate() {
-        var movie = new Movie(null, "The Matrix", "Keanu Reeves",
+        var movie = new MovieInfo(null, "The Matrix", "Keanu Reeves",
                 LocalDate.of(1999, 3, 24), 1999);
         wm.stubFor(post(urlPathEqualTo(ADD_MOVIE_V1))
                 .withRequestBody(matchingJsonPath("$.name", equalTo("The Matrix")))
@@ -218,13 +217,13 @@ class MoviesRestClientTest {
                 ));
         var addedMovie = moviesRestClient.addMovie(movie);
         System.out.println(addedMovie);
-        assertNotNull(addedMovie.getMovieId());
+        assertNotNull(addedMovie.getMovieInfoId());
     }
 
     @Test
     void addMovieBadRequest() {
 
-        var movie = new Movie(null, null, "Keanu Reeves",
+        var movie = new MovieInfo(null, null, "Keanu Reeves",
                 LocalDate.of(1999, 3, 24), 1999);
         wm.stubFor(post(urlPathEqualTo(ADD_MOVIE_V1))
                 .withRequestBody(matchingJsonPath("$.cast", containing("Keanu")))
@@ -241,8 +240,8 @@ class MoviesRestClientTest {
     void updateMovie() {
         Integer movieId = 3;
         var cast = "ABC";
-        var movie = Movie.builder().cast(cast).build();
-        wm.stubFor(put(urlPathMatching("/movieservice/v1/movie/[0-9]+"))
+        var movie = MovieInfo.builder().cast(cast).build();
+        wm.stubFor(put(urlPathMatching("/movies/v1/movie_infos/[0-9]+"))
                 .withRequestBody(matchingJsonPath("$.cast", containing(cast)))
                 .willReturn(aResponse()
                         .withStatus(200)
@@ -258,8 +257,8 @@ class MoviesRestClientTest {
     void updateMovieNotFound() {
         Integer movieId = 999;
         var cast = "ABC";
-        var movie = Movie.builder().cast(cast).build();
-        wm.stubFor(put(urlPathMatching("/movieservice/v1/movie/[0-9]+"))
+        var movie = MovieInfo.builder().cast(cast).build();
+        wm.stubFor(put(urlPathMatching("/v1/movie_infos/[0-9]+"))
                 .withRequestBody(matchingJsonPath("$.cast", containing(cast)))
                 .willReturn(aResponse()
                         .withStatus(404)
@@ -270,7 +269,7 @@ class MoviesRestClientTest {
 
     @Test
     void deleteMovie() {
-        var movie = new Movie(null, "The Matrix", "Keanu Reeves", LocalDate.of(1999, 3, 24), 1999);
+        var movie = new MovieInfo(null, "The Matrix", "Keanu Reeves", LocalDate.of(1999, 3, 24), 1999);
         wm.stubFor(post(urlPathEqualTo(ADD_MOVIE_V1))
                 .withRequestBody(matchingJsonPath("$.name", equalTo("The Matrix")))
                 .withRequestBody(matchingJsonPath("$.cast", containing("Keanu")))
@@ -282,22 +281,22 @@ class MoviesRestClientTest {
 
         var addedMovie = moviesRestClient.addMovie(movie);
         var expectedErrorMessage = "Movie Deleted Successfully";
-        wm.stubFor(delete(urlPathMatching("/movieservice/v1/movie/[0-9]+"))
+        wm.stubFor(delete(urlPathMatching("/movies/v1/movie_infos/[0-9]+"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                         .withBody(expectedErrorMessage)
                 ));
 
-        var responseMessage = moviesRestClient.deleteMovie(addedMovie.getMovieId());
+        var responseMessage = moviesRestClient.deleteMovie(addedMovie.getMovieInfoId());
 
         assertEquals(expectedErrorMessage, responseMessage);
     }
 
     @Test
     void deleteMovieNotFound() {
-        Integer movieId = 99;
-        wm.stubFor(delete(urlPathMatching("/movieservice/v1/movie/[0-9]+"))
+        Long movieId = 99L;
+        wm.stubFor(delete(urlPathMatching("/v1/movie_infos/[0-9]+"))
                 .willReturn(aResponse()
                         .withStatus(404)
                         .withHeader("Content-Type", "application/json")
@@ -307,7 +306,7 @@ class MoviesRestClientTest {
 
     @Test
     void deleteMovieByName() {
-        var movie = new Movie(null, "The Matrix", "Keanu Reeves", LocalDate.of(1999, 3, 24), 1999);
+        var movie = new MovieInfo(null, "The Matrix", "Keanu Reeves", LocalDate.of(1999, 3, 24), 1999);
         wm.stubFor(post(urlPathEqualTo(ADD_MOVIE_V1))
                 .withRequestBody(matchingJsonPath("$.name", equalTo("The Matrix")))
                 .withRequestBody(matchingJsonPath("$.cast", containing("Keanu")))
@@ -334,6 +333,29 @@ class MoviesRestClientTest {
         wm.verify(exactly(1), postRequestedFor(urlPathEqualTo(ADD_MOVIE_V1))
                 .withRequestBody(matchingJsonPath("$.name", equalTo("The Matrix")))
                 .withRequestBody(matchingJsonPath("$.cast", containing("Keanu"))));
+
+        wm.verify(exactly(1), deleteRequestedFor(urlPathEqualTo(MOVIE_BY_NAME_QUERY_PARAM_V1))
+                .withQueryParam("movie_name", equalTo(addedMovie.getName())));
+    }
+
+    @Test
+    void deleteMovieByNameWithSelectiveProxy() {
+        var movie = new MovieInfo(null, "The Matrix", "Keanu Reeves", LocalDate.of(1999, 3, 24), 1999);
+
+        wm.stubFor(any(anyUrl()).willReturn(aResponse().proxiedFrom("http://localhost:8080")));
+
+        var addedMovie = moviesRestClient.addMovie(movie);
+        var expectedErrorMessage = "Movie Deleted Successfully";
+        wm.stubFor(delete(urlPathEqualTo(MOVIE_BY_NAME_QUERY_PARAM_V1))
+                .withQueryParam("movie_name", equalTo(addedMovie.getName()))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                ));
+
+        var responseMessage = moviesRestClient.deleteMovieByName(addedMovie.getName());
+
+        assertEquals(expectedErrorMessage, responseMessage);
 
         wm.verify(exactly(1), deleteRequestedFor(urlPathEqualTo(MOVIE_BY_NAME_QUERY_PARAM_V1))
                 .withQueryParam("movie_name", equalTo(addedMovie.getName())));
