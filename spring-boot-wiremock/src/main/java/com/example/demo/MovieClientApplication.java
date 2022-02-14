@@ -11,10 +11,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
 @SpringBootApplication
-public class DemoApplication {
+public class MovieClientApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(DemoApplication.class, args);
+        SpringApplication.run(MovieClientApplication.class, args);
     }
 
     @Value("${movieapp.baseUrl}")
