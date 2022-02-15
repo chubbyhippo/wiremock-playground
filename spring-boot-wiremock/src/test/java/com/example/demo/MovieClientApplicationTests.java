@@ -10,6 +10,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWireMock(port = 0)
@@ -52,5 +53,17 @@ class MovieClientApplicationTests {
         var movies = moviesRestClient.retrieveAllMovies();
         System.out.println(movies);
         assertThat(movies.size()).isPositive();
+    }
+
+    @Test
+    void shouldRetrieveMovieById() {
+        stubFor(get(urlPathMatching("/movies/v1/movie_infos/[0-9]")).willReturn(aResponse()
+                .withStatus(200).withHeader("Content-Type", "application/json")
+                .withBodyFile("movie.json")));
+        Integer movieId = 1;
+
+        var movie = moviesRestClient.retrieveMovieById(movieId);
+        System.out.println("movie = " + movie);
+        assertThat(movie.getName()).isEqualTo("Batman Begins");
     }
 }
