@@ -10,6 +10,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWireMock(port = 0)
@@ -40,4 +42,16 @@ class MovieClientApplicationTests {
         assertThat(movies.size()).isPositive();
     }
 
+    @Test
+    void shouldRetrieveAllMoviesWith503serviceUnavailable() {
+        stubFor(get(anyUrl())
+                .willReturn(serverError()
+                        .withStatus(503)
+                        .withBody("Service Unavailable")));
+
+        var movieErrorResponse = assertThrows(MovieErrorResponse.class,
+                () -> moviesRestClient.retrieveAllMovies());
+        assertEquals("Service Unavailable", movieErrorResponse.getMessage());
+
+    }
 }
