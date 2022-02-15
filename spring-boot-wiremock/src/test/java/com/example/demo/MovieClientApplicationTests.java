@@ -14,7 +14,6 @@ import static com.example.demo.MoviesAppConstants.ADD_MOVIE_V1;
 import static com.example.demo.MoviesAppConstants.MOVIE_BY_NAME_QUERY_PARAM_V1;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWireMock(port = 0)
@@ -64,7 +63,7 @@ class MovieClientApplicationTests {
         stubFor(get(urlPathMatching("/movies/v1/movie_infos/[0-9]")).willReturn(aResponse()
                 .withStatus(200).withHeader("Content-Type", "application/json")
                 .withBodyFile("movie.json")));
-        Integer movieId = 1;
+        Long movieId = 1L;
 
         var movie = moviesRestClient.retrieveMovieById(movieId);
         System.out.println("movie = " + movie);
@@ -79,12 +78,12 @@ class MovieClientApplicationTests {
                         .withHeader("Content-Type", "application/json")
                         .withBodyFile("movie-template.json")
                 ));
-        Integer movieId = 1;
+        Long movieId = 1L;
 
         var movie = moviesRestClient.retrieveMovieById(movieId);
         System.out.println("movie = " + movie);
-        assertEquals("Batman Begins", movie.getName());
-        assertEquals(movieId, movie.getMovieInfoId().intValue());
+        assertThat(movie.getName()).isEqualTo("Batman Begins");
+        assertThat(movie.getMovieInfoId()).isEqualTo(movieId);
     }
 
     @Test

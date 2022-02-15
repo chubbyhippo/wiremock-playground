@@ -34,7 +34,7 @@ public class MoviesRestClient {
         }
     }
 
-    public MovieInfo retrieveMovieById(Integer movieId) {
+    public MovieInfo retrieveMovieById(Long movieId) {
         try {
             return webClient.get().uri(MoviesAppConstants.MOVIE_BY_ID_PATH_PARAM_V1, movieId)
                     .retrieve()
