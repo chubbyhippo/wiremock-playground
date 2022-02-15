@@ -25,7 +25,10 @@ class MoviesRestClientTest {
 
     @RegisterExtension
     private final WireMockExtension wm =
-            WireMockExtension.newInstance().options(wireMockConfig().dynamicPort().extensions(new ResponseTemplateTransformer(true))).build();
+            WireMockExtension.newInstance().options(wireMockConfig()
+                            .dynamicPort()
+                            .extensions(new ResponseTemplateTransformer(true)))
+                    .build();
 
     @BeforeEach
     void setUp() {
@@ -48,7 +51,11 @@ class MoviesRestClientTest {
 
     @Test
     void retrieveAllMoviesMatchesUrl() {
-        wm.stubFor(get(urlPathEqualTo(MoviesAppConstants.GET_ALL_MOVIES_V1)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBodyFile("all-movies.json")));
+        wm.stubFor(get(urlPathEqualTo(MoviesAppConstants.GET_ALL_MOVIES_V1))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("all-movies.json")));
 
         var movies = moviesRestClient.retrieveAllMovies();
         System.out.println(movies);
@@ -57,7 +64,9 @@ class MoviesRestClientTest {
 
     @Test
     void retrieveMovieById() {
-        wm.stubFor(get(urlPathMatching("/movies/v1/movie_infos/[0-9]")).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBodyFile("movie.json")));
+        wm.stubFor(get(urlPathMatching("/movies/v1/movie_infos/[0-9]")).willReturn(aResponse()
+                .withStatus(200).withHeader("Content-Type", "application/json")
+                .withBodyFile("movie.json")));
         Integer movieId = 1;
 
         var movie = moviesRestClient.retrieveMovieById(movieId);
@@ -269,7 +278,8 @@ class MoviesRestClientTest {
 
     @Test
     void deleteMovie() {
-        var movie = new MovieInfo(null, "The Matrix", "Keanu Reeves", LocalDate.of(1999, 3, 24), 1999);
+        var movie = new MovieInfo(null, "The Matrix", "Keanu Reeves",
+                LocalDate.of(1999, 3, 24), 1999);
         wm.stubFor(post(urlPathEqualTo(ADD_MOVIE_V1))
                 .withRequestBody(matchingJsonPath("$.name", equalTo("The Matrix")))
                 .withRequestBody(matchingJsonPath("$.cast", containing("Keanu")))
@@ -306,7 +316,8 @@ class MoviesRestClientTest {
 
     @Test
     void deleteMovieByName() {
-        var movie = new MovieInfo(null, "The Matrix", "Keanu Reeves", LocalDate.of(1999, 3, 24), 1999);
+        var movie = new MovieInfo(null, "The Matrix", "Keanu Reeves",
+                LocalDate.of(1999, 3, 24), 1999);
         wm.stubFor(post(urlPathEqualTo(ADD_MOVIE_V1))
                 .withRequestBody(matchingJsonPath("$.name", equalTo("The Matrix")))
                 .withRequestBody(matchingJsonPath("$.cast", containing("Keanu")))
@@ -340,7 +351,8 @@ class MoviesRestClientTest {
 
     @Test
     void deleteMovieByNameWithSelectiveProxy() {
-        var movie = new MovieInfo(null, "The Matrix", "Keanu Reeves", LocalDate.of(1999, 3, 24), 1999);
+        var movie = new MovieInfo(null, "The Matrix", "Keanu Reeves",
+                LocalDate.of(1999, 3, 24), 1999);
 
         wm.stubFor(any(anyUrl()).willReturn(aResponse().proxiedFrom("http://localhost:8080")));
 
