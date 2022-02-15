@@ -1,13 +1,17 @@
 package com.example.demo;
 
 import com.github.tomakehurst.wiremock.http.Fault;
+import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.handler.timeout.WriteTimeoutHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.netty.http.client.HttpClient;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWireMock(port = 0)
-class MovieClientApplicationTests {
+class MovieClientApplicationFaultResponseTests {
 
     @Autowired
     MoviesRestClient moviesRestClient;
@@ -28,7 +32,17 @@ class MovieClientApplicationTests {
     void setUp() {
         var baseUrl = String.format("http://localhost:%s", port);
         System.out.println("baseUrl = " + baseUrl);
-        var webClient = WebClient.create(baseUrl);
+
+        HttpClient httpClient = HttpClient.create()
+                .doOnConnected(connection -> connection
+                        .addHandler(new ReadTimeoutHandler(5))
+                        .addHandler(new WriteTimeoutHandler(5)));
+
+        var webClient = WebClient.builder()
+                .baseUrl(baseUrl)
+                .clientConnector(new ReactorClientHttpConnector(httpClient))
+                .build();
+
         moviesRestClient = new MoviesRestClient(webClient);
     }
 
@@ -84,6 +98,16 @@ class MovieClientApplicationTests {
     void shouldRetrieveAllMoviesWithFixedDelay() {
         stubFor(get(anyUrl())
                 .willReturn(ok().withFixedDelay(10000)));
+
+        assertThrows(MovieErrorResponse.class,
+                () -> moviesRestClient.retrieveAllMovies());
+
+    }
+
+    @Test
+    void retrieveAllMoviesWithRandomDelay() {
+        stubFor(get(anyUrl())
+                .willReturn(ok().withUniformRandomDelay(5500, 10000)));
 
         assertThrows(MovieErrorResponse.class,
                 () -> moviesRestClient.retrieveAllMovies());
