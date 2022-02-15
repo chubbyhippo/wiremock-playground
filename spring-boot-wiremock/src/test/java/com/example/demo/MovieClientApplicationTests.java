@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWireMock(port = 0)
-public class MovieClientApplicationTests {
+class MovieClientApplicationTests {
     @Autowired
     MoviesRestClient moviesRestClient;
 
