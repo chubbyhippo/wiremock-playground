@@ -79,4 +79,14 @@ class MovieClientApplicationTests {
                 () -> moviesRestClient.retrieveAllMovies());
 
     }
+
+    @Test
+    void shouldRetrieveAllMoviesWithFixedDelay() {
+        stubFor(get(anyUrl())
+                .willReturn(ok().withFixedDelay(10000)));
+
+        assertThrows(MovieErrorResponse.class,
+                () -> moviesRestClient.retrieveAllMovies());
+
+    }
 }
