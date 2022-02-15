@@ -31,7 +31,7 @@ class MovieClientApplicationTests {
 
 
     @Test
-    void retrieveAllMovies() {
+    void shouldRetrieveAllMovies() {
         stubFor(get(anyUrl()).willReturn(aResponse().withStatus(200).withHeader("Content-Type",
                 "application/json").withBodyFile("all-movies.json")));
 
