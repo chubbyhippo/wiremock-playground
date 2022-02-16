@@ -128,4 +128,21 @@ class MovieClientApplicationTests {
         assertEquals(4, movies.size());
         assertEquals(expectedName, movies.get(3).getName());
     }
+
+    @Test
+    void shouldRetrieveMoviesByNameResponseTemplate() {
+        var movieName = "Avengers";
+        stubFor(get(urlEqualTo(MoviesAppConstants.MOVIE_BY_NAME_QUERY_PARAM_V1 + "?movie_name=" + movieName))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("movie-by-name-template.json")
+                ));
+
+        var movies = moviesRestClient.retrieveMoviesByName(movieName);
+        System.out.println("movies = " + movies);
+        var expectedName = "Avengers: End Game";
+        assertEquals(4, movies.size());
+        assertEquals(expectedName, movies.get(3).getName());
+    }
 }
