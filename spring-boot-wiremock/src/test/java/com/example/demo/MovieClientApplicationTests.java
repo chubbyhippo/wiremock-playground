@@ -145,4 +145,18 @@ class MovieClientApplicationTests {
         assertEquals(4, movies.size());
         assertEquals(expectedName, movies.get(3).getName());
     }
+
+    @Test
+    void shouldRetrieveMoviesByNameNotFound() {
+        var movieName = "ABC";
+        stubFor(get(urlPathEqualTo(MoviesAppConstants.MOVIE_BY_NAME_QUERY_PARAM_V1))
+                .withQueryParam("movie_name", equalTo(movieName))
+                .willReturn(aResponse()
+                        .withStatus(404)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("404-movie-name.json")
+                ));
+
+        assertThrows(MovieErrorResponse.class, () -> moviesRestClient.retrieveMoviesByName(movieName));
+    }
 }
