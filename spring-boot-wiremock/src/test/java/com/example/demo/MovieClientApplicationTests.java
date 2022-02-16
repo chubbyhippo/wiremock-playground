@@ -159,4 +159,19 @@ class MovieClientApplicationTests {
 
         assertThrows(MovieErrorResponse.class, () -> moviesRestClient.retrieveMoviesByName(movieName));
     }
+
+    @Test
+    void shouldRetrieveMoviesByYear() {
+        Integer year = 2012;
+        stubFor(get(urlPathEqualTo(MoviesAppConstants.MOVIE_BY_YEAR_QUERY_PARAM_V1))
+                .withQueryParam("year", equalTo(String.valueOf(year)))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("year-template.json")
+                ));
+        var movies = moviesRestClient.retrieveMoviesByYear(year);
+        System.out.println("movies = " + movies);
+        assertEquals(2, movies.size());
+    }
 }
