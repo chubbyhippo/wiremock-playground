@@ -11,6 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.time.LocalDate;
 
 import static com.example.demo.MoviesAppConstants.ADD_MOVIE_V1;
+import static com.example.demo.MoviesAppConstants.MOVIE_BY_NAME_QUERY_PARAM_V1;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -102,7 +103,7 @@ class MovieClientApplicationTests {
     @Test
     void shouldRetrieveMoviesByName() {
         var movieName = "Avengers";
-        stubFor(get(urlEqualTo(MoviesAppConstants.MOVIE_BY_NAME_QUERY_PARAM_V1 + "?movie_name=" + movieName))
+        stubFor(get(urlEqualTo(MOVIE_BY_NAME_QUERY_PARAM_V1 + "?movie_name=" + movieName))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
@@ -118,7 +119,7 @@ class MovieClientApplicationTests {
     @Test
     void shouldRetrieveMoviesByNameUrlPathEqualTo() {
         var movieName = "Avengers";
-        stubFor(get(urlPathEqualTo(MoviesAppConstants.MOVIE_BY_NAME_QUERY_PARAM_V1))
+        stubFor(get(urlPathEqualTo(MOVIE_BY_NAME_QUERY_PARAM_V1))
                 .withQueryParam("movie_name", equalTo(movieName))
                 .willReturn(aResponse()
                         .withStatus(200)
@@ -135,7 +136,7 @@ class MovieClientApplicationTests {
     @Test
     void shouldRetrieveMoviesByNameResponseTemplate() {
         var movieName = "Avengers";
-        stubFor(get(urlEqualTo(MoviesAppConstants.MOVIE_BY_NAME_QUERY_PARAM_V1 + "?movie_name=" + movieName))
+        stubFor(get(urlEqualTo(MOVIE_BY_NAME_QUERY_PARAM_V1 + "?movie_name=" + movieName))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
@@ -152,7 +153,7 @@ class MovieClientApplicationTests {
     @Test
     void shouldRetrieveMoviesByNameNotFound() {
         var movieName = "ABC";
-        stubFor(get(urlPathEqualTo(MoviesAppConstants.MOVIE_BY_NAME_QUERY_PARAM_V1))
+        stubFor(get(urlPathEqualTo(MOVIE_BY_NAME_QUERY_PARAM_V1))
                 .withQueryParam("movie_name", equalTo(movieName))
                 .willReturn(aResponse()
                         .withStatus(404)
@@ -308,5 +309,40 @@ class MovieClientApplicationTests {
                         .withHeader("Content-Type", "application/json")
                 ));
         assertThrows(MovieErrorResponse.class, () -> moviesRestClient.deleteMovie(movieId));
+    }
+
+    @Test
+    void shouldDeleteMovieByName() {
+        var movie = new MovieInfo(null, "The Matrix", "Keanu Reeves",
+                LocalDate.of(1999, 3, 24), 1999);
+        stubFor(post(urlPathEqualTo(ADD_MOVIE_V1))
+                .withRequestBody(matchingJsonPath("$.name", equalTo("The Matrix")))
+                .withRequestBody(matchingJsonPath("$.cast", containing("Keanu")))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("add-movie.json")
+                ));
+
+        var addedMovie = moviesRestClient.addMovie(movie);
+        var expectedErrorMessage = "Movie Deleted Successfully";
+        stubFor(delete(urlPathEqualTo(MOVIE_BY_NAME_QUERY_PARAM_V1))
+                .withQueryParam("movie_name", equalTo(addedMovie.getName()))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                ));
+
+        var responseMessage = moviesRestClient.deleteMovieByName(addedMovie.getName());
+
+        assertEquals(expectedErrorMessage, responseMessage);
+
+
+        verify(exactly(1), postRequestedFor(urlPathEqualTo(ADD_MOVIE_V1))
+                .withRequestBody(matchingJsonPath("$.name", equalTo("The Matrix")))
+                .withRequestBody(matchingJsonPath("$.cast", containing("Keanu"))));
+
+        verify(exactly(1), deleteRequestedFor(urlPathEqualTo(MOVIE_BY_NAME_QUERY_PARAM_V1))
+                .withQueryParam("movie_name", equalTo(addedMovie.getName())));
     }
 }
