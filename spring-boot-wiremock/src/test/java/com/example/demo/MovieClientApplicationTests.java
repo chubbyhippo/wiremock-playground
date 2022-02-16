@@ -174,4 +174,17 @@ class MovieClientApplicationTests {
         System.out.println("movies = " + movies);
         assertEquals(2, movies.size());
     }
+
+    @Test
+    void shouldRetrieveMoviesByYearNotFound() {
+        Integer year = 2999;
+        stubFor(get(urlPathEqualTo(MoviesAppConstants.MOVIE_BY_YEAR_QUERY_PARAM_V1))
+                .withQueryParam("year", equalTo(String.valueOf(year)))
+                .willReturn(aResponse()
+                        .withStatus(404)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("404-movie-year.json")
+                ));
+        assertThrows(MovieErrorResponse.class, () -> moviesRestClient.retrieveMoviesByYear(year));
+    }
 }
