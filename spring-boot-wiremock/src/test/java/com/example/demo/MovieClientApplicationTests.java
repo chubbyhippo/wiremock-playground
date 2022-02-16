@@ -345,4 +345,28 @@ class MovieClientApplicationTests {
         verify(exactly(1), deleteRequestedFor(urlPathEqualTo(MOVIE_BY_NAME_QUERY_PARAM_V1))
                 .withQueryParam("movie_name", equalTo(addedMovie.getName())));
     }
+
+    @Test
+    void shouldDeleteMovieByNameWithSelectiveProxy() {
+        var movie = new MovieInfo(null, "The Matrix", "Keanu Reeves",
+                LocalDate.of(1999, 3, 24), 1999);
+
+        stubFor(any(anyUrl()).willReturn(aResponse().proxiedFrom("http://localhost:8080")));
+
+        var addedMovie = moviesRestClient.addMovie(movie);
+        var expectedErrorMessage = "Movie Deleted Successfully";
+        stubFor(delete(urlPathEqualTo(MOVIE_BY_NAME_QUERY_PARAM_V1))
+                .withQueryParam("movie_name", equalTo(addedMovie.getName()))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                ));
+
+        var responseMessage = moviesRestClient.deleteMovieByName(addedMovie.getName());
+
+        assertEquals(expectedErrorMessage, responseMessage);
+
+        verify(exactly(1), deleteRequestedFor(urlPathEqualTo(MOVIE_BY_NAME_QUERY_PARAM_V1))
+                .withQueryParam("movie_name", equalTo(addedMovie.getName())));
+    }
 }
