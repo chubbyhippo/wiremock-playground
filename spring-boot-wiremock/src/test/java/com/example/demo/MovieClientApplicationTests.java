@@ -271,4 +271,31 @@ class MovieClientApplicationTests {
                 ));
         assertThrows(MovieErrorResponse.class, () -> moviesRestClient.updateMovie(movieId, movie));
     }
+
+    @Test
+    void shouldDeleteMovie() {
+        var movie = new MovieInfo(null, "The Matrix", "Keanu Reeves",
+                LocalDate.of(1999, 3, 24), 1999);
+        stubFor(post(urlPathEqualTo(ADD_MOVIE_V1))
+                .withRequestBody(matchingJsonPath("$.name", equalTo("The Matrix")))
+                .withRequestBody(matchingJsonPath("$.cast", containing("Keanu")))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("add-movie.json")
+                ));
+
+        var addedMovie = moviesRestClient.addMovie(movie);
+        var expectedErrorMessage = "Movie Deleted Successfully";
+        stubFor(delete(urlPathMatching("/movies/v1/movie_infos/[0-9]+"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(expectedErrorMessage)
+                ));
+
+        var responseMessage = moviesRestClient.deleteMovie(addedMovie.getMovieInfoId());
+
+        assertEquals(expectedErrorMessage, responseMessage);
+    }
 }
