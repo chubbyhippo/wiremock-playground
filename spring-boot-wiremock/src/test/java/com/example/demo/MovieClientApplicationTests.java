@@ -8,6 +8,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.LocalDate;
+
+import static com.example.demo.MoviesAppConstants.ADD_MOVIE_V1;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -186,5 +189,22 @@ class MovieClientApplicationTests {
                         .withBodyFile("404-movie-year.json")
                 ));
         assertThrows(MovieErrorResponse.class, () -> moviesRestClient.retrieveMoviesByYear(year));
+    }
+
+    @Test
+    void shouldAddMovie() {
+        var movie = new MovieInfo(null, "The Matrix", "Keanu Reeves",
+                LocalDate.of(1999, 3, 24), 1999);
+        stubFor(post(urlPathEqualTo(ADD_MOVIE_V1))
+                .withRequestBody(matchingJsonPath("$.name", equalTo("The Matrix")))
+                .withRequestBody(matchingJsonPath("$.cast", containing("Keanu")))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("add-movie.json")
+                ));
+        var addedMovie = moviesRestClient.addMovie(movie);
+        System.out.println(addedMovie);
+        assertNotNull(addedMovie.getMovieInfoId());
     }
 }
