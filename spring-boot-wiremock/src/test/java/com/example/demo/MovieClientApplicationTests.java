@@ -224,4 +224,20 @@ class MovieClientApplicationTests {
         System.out.println(addedMovie);
         assertNotNull(addedMovie.getMovieInfoId());
     }
+
+    @Test
+    void shouldAddMovieBadRequest() {
+
+        var movie = new MovieInfo(null, null, "Keanu Reeves",
+                LocalDate.of(1999, 3, 24), 1999);
+        stubFor(post(urlPathEqualTo(ADD_MOVIE_V1))
+                .withRequestBody(matchingJsonPath("$.cast", containing("Keanu")))
+                .willReturn(aResponse()
+                        .withStatus(400)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("400-invalid-input.json")
+                ));
+        var expectedErrorMessage = "Please pass all the input fields : [name]";
+        assertThrows(MovieErrorResponse.class, () -> moviesRestClient.addMovie(movie), expectedErrorMessage);
+    }
 }
