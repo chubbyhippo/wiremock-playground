@@ -240,4 +240,21 @@ class MovieClientApplicationTests {
         var expectedErrorMessage = "Please pass all the input fields : [name]";
         assertThrows(MovieErrorResponse.class, () -> moviesRestClient.addMovie(movie), expectedErrorMessage);
     }
+
+    @Test
+    void shouldUpdateMovie() {
+        Integer movieId = 3;
+        var cast = "ABC";
+        var movie = MovieInfo.builder().cast(cast).build();
+        stubFor(put(urlPathMatching("/movies/v1/movie_infos/[0-9]+"))
+                .withRequestBody(matchingJsonPath("$.cast", containing(cast)))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("update-movie-template.json")
+                ));
+        var updatedMovie = moviesRestClient.updateMovie(movieId, movie);
+        System.out.println(updatedMovie);
+        assertTrue(updatedMovie.getCast().contains(cast));
+    }
 }
