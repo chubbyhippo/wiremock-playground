@@ -96,4 +96,19 @@ class MovieClientApplicationTests {
         assertThrows(MovieErrorResponse.class, () -> moviesRestClient.retrieveMovieById(movieId));
     }
 
+    @Test
+    void shouldRetrieveMoviesByName() {
+        var movieName = "Avengers";
+        stubFor(get(urlEqualTo(MoviesAppConstants.MOVIE_BY_NAME_QUERY_PARAM_V1 + "?movie_name=" + movieName))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("avengers.json")
+                ));
+
+        var movies = moviesRestClient.retrieveMoviesByName(movieName);
+        var expectedName = "Avengers: End Game";
+        assertEquals(4, movies.size());
+        assertEquals(expectedName, movies.get(3).getName());
+    }
 }
