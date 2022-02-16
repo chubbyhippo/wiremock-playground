@@ -257,4 +257,18 @@ class MovieClientApplicationTests {
         System.out.println(updatedMovie);
         assertTrue(updatedMovie.getCast().contains(cast));
     }
+
+    @Test
+    void shouldUpdateMovieNotFound() {
+        Integer movieId = 999;
+        var cast = "ABC";
+        var movie = MovieInfo.builder().cast(cast).build();
+        stubFor(put(urlPathMatching("/v1/movie_infos/[0-9]+"))
+                .withRequestBody(matchingJsonPath("$.cast", containing(cast)))
+                .willReturn(aResponse()
+                        .withStatus(404)
+                        .withHeader("Content-Type", "application/json")
+                ));
+        assertThrows(MovieErrorResponse.class, () -> moviesRestClient.updateMovie(movieId, movie));
+    }
 }
