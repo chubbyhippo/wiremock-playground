@@ -83,4 +83,17 @@ class MovieClientApplicationTests {
         assertEquals(movieId, movie.getMovieInfoId().intValue());
     }
 
+    @Test
+    void shouldRetrieveMovieByIdNotFound() {
+        stubFor(get(urlPathMatching("/v1/movie_infos/[0-9]+"))
+                .willReturn(aResponse()
+                        .withStatus(404)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("404-movie-id.json")
+                ));
+        Integer movieId = 100;
+
+        assertThrows(MovieErrorResponse.class, () -> moviesRestClient.retrieveMovieById(movieId));
+    }
+
 }
