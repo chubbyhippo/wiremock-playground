@@ -14,6 +14,7 @@ import static com.example.demo.MoviesAppConstants.ADD_MOVIE_V1;
 import static com.example.demo.MoviesAppConstants.MOVIE_BY_NAME_QUERY_PARAM_V1;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWireMock(port = 0)
@@ -94,7 +95,7 @@ class MovieClientApplicationTests {
                         .withHeader("Content-Type", "application/json")
                         .withBodyFile("404-movie-id.json")
                 ));
-        Integer movieId = 100;
+        Long movieId = 100L;
 
         assertThrows(MovieErrorResponse.class, () -> moviesRestClient.retrieveMovieById(movieId));
     }
