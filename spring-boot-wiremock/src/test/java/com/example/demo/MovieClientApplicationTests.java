@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWireMock(port = 0)
 class MovieClientApplicationTests {
+
     @Autowired
     MoviesRestClient moviesRestClient;
 
@@ -43,7 +44,7 @@ class MovieClientApplicationTests {
 
         var movies = moviesRestClient.retrieveAllMovies();
         System.out.println(movies);
-        assertThat(movies.size()).isPositive();
+        assertThat(movies).isNotEmpty();
     }
 
     @Test
@@ -56,7 +57,7 @@ class MovieClientApplicationTests {
 
         var movies = moviesRestClient.retrieveAllMovies();
         System.out.println(movies);
-        assertThat(movies.size()).isPositive();
+        assertThat(movies).isNotEmpty();
     }
 
     @Test
