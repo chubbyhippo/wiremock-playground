@@ -54,7 +54,7 @@ class MovieClientApplicationFaultResponseTests {
 
         var movies = moviesRestClient.retrieveAllMovies();
         System.out.println(movies);
-        assertThat(movies.size()).isPositive();
+        assertThat(movies).isNotEmpty();
     }
 
     @Test
