@@ -32,7 +32,7 @@ dependencies {
 	implementation ("org.springframework.boot:spring-boot-starter-validation")
 
 	//swagger
-	implementation ("org.springdoc:springdoc-openapi-webflux-ui:1.6.5")
+	implementation ("org.springdoc:springdoc-openapi-webflux-ui:1.6.8")
 
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
