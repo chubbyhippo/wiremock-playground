@@ -305,7 +305,7 @@ class MovieClientApplicationTests {
     @Test
     void shouldDeleteMovieNotFound() {
         Long movieId = 99L;
-        stubFor(delete(urlPathMatching("/v1/movie_infos/[0-9]+"))
+        stubFor(delete(urlPathMatching("/movies/v1/movie_infos/[0-9]+"))
                 .willReturn(aResponse()
                         .withStatus(404)
                         .withHeader("Content-Type", "application/json")
