@@ -7,6 +7,7 @@ import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemp
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -350,6 +351,7 @@ class MoviesRestClientTest {
     }
 
     @Test
+    @Disabled("Need to spin up the reactive movies restful api service")
     void deleteMovieByNameWithSelectiveProxy() {
         var movie = new MovieInfo(null, "The Matrix", "Keanu Reeves",
                 LocalDate.of(1999, 3, 24), 1999);
