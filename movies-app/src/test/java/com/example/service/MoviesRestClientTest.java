@@ -28,7 +28,7 @@ class MoviesRestClientTest {
     private final WireMockExtension wm =
             WireMockExtension.newInstance().options(wireMockConfig()
                             .dynamicPort()
-                            .extensions(new ResponseTemplateTransformer(true)))
+                            .extensions(new ResponseTemplateTransformer(false)))
                     .build();
 
     @BeforeEach
@@ -82,6 +82,7 @@ class MoviesRestClientTest {
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                         .withBodyFile("movie-template.json")
+                        .withTransformers("response-template")
                 ));
         Integer movieId = 1;
 
@@ -145,6 +146,7 @@ class MoviesRestClientTest {
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                         .withBodyFile("movie-by-name-template.json")
+                        .withTransformers("response-template")
                 ));
 
         var movies = moviesRestClient.retrieveMoviesByName(movieName);
@@ -177,6 +179,7 @@ class MoviesRestClientTest {
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                         .withBodyFile("year-template.json")
+                        .withTransformers("response-template")
                 ));
         var movies = moviesRestClient.retrieveMoviesByYear(year);
         System.out.println("movies = " + movies);
@@ -224,6 +227,7 @@ class MoviesRestClientTest {
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                         .withBodyFile("add-movies-template.json")
+                        .withTransformers("response-template")
                 ));
         var addedMovie = moviesRestClient.addMovie(movie);
         System.out.println(addedMovie);
@@ -257,6 +261,7 @@ class MoviesRestClientTest {
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                         .withBodyFile("update-movie-template.json")
+                        .withTransformers("response-template")
                 ));
         var updatedMovie = moviesRestClient.updateMovie(movieId, movie);
         System.out.println(updatedMovie);
