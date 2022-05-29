@@ -265,7 +265,7 @@ class MovieClientApplicationTests {
         Integer movieId = 999;
         var cast = "ABC";
         var movie = MovieInfo.builder().cast(cast).build();
-        stubFor(put(urlPathMatching("/v1/movie_infos/[0-9]+"))
+        stubFor(put(urlPathMatching("/movies/v1/movie_infos/[0-9]+"))
                 .withRequestBody(matchingJsonPath("$.cast", containing(cast)))
                 .willReturn(aResponse()
                         .withStatus(404)
