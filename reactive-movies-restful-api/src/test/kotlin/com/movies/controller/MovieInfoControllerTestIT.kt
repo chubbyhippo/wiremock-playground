@@ -31,12 +31,6 @@ class MovieInfoControllerTestIT {
     @Autowired
     lateinit var movieInfoService: MovieInfoService
 
-/*    @AfterEach
-    internal fun tearDown() {
-        movieInfoService.deleteAllMovieInfo()
-            .block()
-    }*/
-
     @BeforeEach
     internal fun setUp() {
         reviewService.deleteAllReviews().block()
@@ -88,12 +82,9 @@ class MovieInfoControllerTestIT {
     @Test
     internal fun createMovieInfo_missingMovieName() {
 
-        //given
         val movieInfo = getMovieInfoKWithCast()
         movieInfo.name = null
-        //`when`(movieInfoServiceMock?.getMovieById(movieInfoId)).thenReturn(Flux.just(movieInfo))
 
-        //when
         webTestClient.post().uri("/v1/movie_infos")
             .bodyValue(movieInfo)
             .exchange()
@@ -105,7 +96,7 @@ class MovieInfoControllerTestIT {
     internal fun updateMovieInfo() {
         val movieInfo = getMovieInfoKWithCast()
         val savedMovieInfo = movieInfoService.saveMovieInfo(movieInfo).block()
-        savedMovieInfo?.cast?.add("Anna Hathaway")
+        savedMovieInfo?.cast = "Anna Hathaway"
 
         val exchangeResult = webTestClient.put().uri("/v1/movie_infos/{id}", savedMovieInfo?.movieInfoId)
             .bodyValue(savedMovieInfo!!)
@@ -116,11 +107,6 @@ class MovieInfoControllerTestIT {
 
         val movieInfoResult = exchangeResult.responseBody
         assertEquals(1, movieInfoResult?.size)
-        movieInfoResult?.forEach {
-            assertEquals(3, it.cast?.size)
-        }
-//        val castList = movieInfoResult?.cast
-//        assertEquals(3, castList?.size)
 
     }
 
